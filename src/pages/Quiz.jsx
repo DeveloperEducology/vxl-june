@@ -15,21 +15,22 @@ const Quiz = () => {
   const { classId, subjectId, lessonId } = useParams();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
+  const [lessonName, setLessonName] = useState("");
   const [feedback, setFeedback] = useState({});
   const [showQuestion, setShowQuestion] = useState(true);
-  const [filledSequences, setFilledSequences] = useState([]);
+  const [filledSequences, setFilledSequen ces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [loadingImage] = useState(UploadingAnimation);
-  
+
   // Timer state
   const [elapsedTime, setElapsedTime] = useState(0);
-  
+
   // Score state
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [attemptedQuestions, setAttemptedQuestions] = useState(0);
-  
+
   // State for math quiz
   const [mathAnswers, setMathAnswers] = useState({});
   const [mathSubmitted, setMathSubmitted] = useState(false);
@@ -62,7 +63,9 @@ const Quiz = () => {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    return `${minutes.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   useEffect(() => {
@@ -73,11 +76,14 @@ const Quiz = () => {
           // `http://localhost:5000/api/questions?lessonId=${lessonId}`
           `https://ilx-backend.onrender.com/api/questions?lessonId=${lessonId}`
         );
-        console.log("Response from API:", questionsRes.data);
-        const fetchedQuestions = questionsRes.data;
+        // console.log("Response from API:", questionsRes.data);
+        const fetchedQuestions = questionsRes.data.questions;
+        const lesson = questionsRes.data.lesson;
+        console.log("Fetched questions:", lesson);
 
         if (fetchedQuestions.length > 0) {
           setQuestions(fetchedQuestions);
+          setLessonName(lesson.name);
           setError(null);
         } else {
           setQuestions([]);
@@ -96,6 +102,8 @@ const Quiz = () => {
 
     fetchQuestions();
   }, [lessonId]);
+
+  console.log("lessonname:", lessonName);
 
   const question = questions[currentQuestionIndex];
 
@@ -1094,7 +1102,8 @@ const Quiz = () => {
 
         return (
           <div className="question-container">
-            <style>{`
+            <style>
+              {`
           .quiz-table {
             font-size: 0.85rem;
             width: auto;
@@ -1277,9 +1286,10 @@ const Quiz = () => {
   };
 
   // Calculate Smart Score as a percentage
-  const smartScore = attemptedQuestions > 0
-    ? Math.round((correctAnswers / attemptedQuestions) * 100)
-    : 0;
+  const smartScore =
+    attemptedQuestions > 0
+      ? Math.round((correctAnswers / attemptedQuestions) * 100)
+      : 0;
 
   if (loading) {
     return (
@@ -1391,6 +1401,7 @@ const Quiz = () => {
           }
         }
       `}</style>
+      <p style={{ fontSize: "10px", marginBottom: "8px" }}>{lessonName}</p>
       <div className="quiz-container">
         <div className="justify-left items-left">
           {showQuestion ? renderQuestion() : null}

@@ -55,7 +55,10 @@ const SingleMathQuiz = ({
 
         case "QMDecimal":
           return (
-            <span key={`${questionId}-${index}`} style={{ fontFamily: "serif" }}>
+            <span
+              key={`${questionId}-${index}`}
+              style={{ fontFamily: "serif" }}
+            >
               {expression.nonRepeatingPart || ""}
             </span>
           );
@@ -102,7 +105,10 @@ const SingleMathQuiz = ({
         case "QMFraction":
           if (expression.latex) {
             return (
-              <span key={`${questionId}-${index}`} style={{ verticalAlign: "middle" }}>
+              <span
+                key={`${questionId}-${index}`}
+                style={{ verticalAlign: "middle" }}
+              >
                 <InlineMath math={expression.latex} />
               </span>
             );
@@ -143,7 +149,10 @@ const SingleMathQuiz = ({
         case "QMExponent":
           if (expression.latex) {
             return (
-              <span key={`${questionId}-${index}`} style={{ verticalAlign: "middle" }}>
+              <span
+                key={`${questionId}-${index}`}
+                style={{ verticalAlign: "middle" }}
+              >
                 <InlineMath math={expression.latex} />
               </span>
             );
@@ -178,7 +187,10 @@ const SingleMathQuiz = ({
         case "QMAlgebraic":
           if (expression.latex) {
             return (
-              <span key={`${questionId}-${index}`} style={{ verticalAlign: "middle" }}>
+              <span
+                key={`${questionId}-${index}`}
+                style={{ verticalAlign: "middle" }}
+              >
                 <InlineMath math={expression.latex} />
               </span>
             );
@@ -203,13 +215,15 @@ const SingleMathQuiz = ({
             return (
               <div
                 key={`${questionId}-${index}`}
-                style={{
-                  margin: "15px 0",
-                  padding: "15px",
-                  backgroundColor: "#f8f9fa",
-                  borderRadius: "8px",
-                  borderLeft: "4px solid #3f51b5",
-                }}
+                style={
+                  {
+                    // margin: "15px 0",
+                    // padding: "15px",
+                    // backgroundColor: "#f8f9fa",
+                    // borderRadius: "8px",
+                    // borderLeft: "4px solid #3f51b5",
+                  }
+                }
               >
                 <BlockMath math={expression.latex} />
               </div>
