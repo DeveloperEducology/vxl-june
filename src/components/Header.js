@@ -17,7 +17,7 @@ const Header = () => {
       </button>
 
       <nav className={`nav ${menuOpen ? "open" : ""}`}>
-        <a href="#home" onClick={() => setMenuOpen(false)}>
+        <a href="/" onClick={() => setMenuOpen(false)}>
           Home
         </a>
         <a href="#features" onClick={() => setMenuOpen(false)}>

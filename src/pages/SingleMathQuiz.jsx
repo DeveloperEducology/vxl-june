@@ -1,4 +1,6 @@
 import React from "react";
+import { InlineMath, BlockMath } from "react-katex";
+import "katex/dist/katex.min.css";
 
 const styles = {
   questionText: {
@@ -42,176 +44,222 @@ const SingleMathQuiz = ({
       return null;
     }
 
-    switch (expression.objectType) {
-      case "PlainText":
-        return (
-          <span key={`${questionId}-${index}`} style={styles.questionText}>
-            {expression.text || ""}
-          </span>
-        );
+    try {
+      switch (expression.objectType) {
+        case "PlainText":
+          return (
+            <span key={`${questionId}-${index}`} style={styles.questionText}>
+              {expression.text || ""}
+            </span>
+          );
 
-      case "QMDecimal":
-        return (
-          <span key={`${questionId}-${index}`} style={{ fontFamily: "serif" }}>
-            {expression.nonRepeatingPart || ""}
-          </span>
-        );
+        case "QMDecimal":
+          return (
+            <span key={`${questionId}-${index}`} style={{ fontFamily: "serif" }}>
+              {expression.nonRepeatingPart || ""}
+            </span>
+          );
 
-      case "QMInput":
-        const userValue = answers[questionId]?.[expression.id] || "";
-        const correctAnswer = expression.correctAnswer || "";
-        const isCorrect = submitted && userValue === correctAnswer;
-        const isIncorrect = submitted && userValue !== correctAnswer;
+        case "QMInput":
+          const userValue = answers[questionId]?.[expression.id] || "";
+          const correctAnswer = expression.correctAnswer || "";
+          const isCorrect = submitted && userValue === correctAnswer;
+          const isIncorrect = submitted && userValue !== correctAnswer;
 
-        return (
-          <input
-            key={`${questionId}-${expression.id}`}
-            type="text"
-            style={{
-              width: `${Math.max(correctAnswer.length * 10, 40)}px`,
-              height: "28px",
-              textAlign: "center",
-              border: submitted
-                ? isCorrect
-                  ? "2px solid #4CAF50"
-                  : "2px solid #F44336"
-                : "1px solid #9E9E9E",
-              margin: "0 4px",
-              padding: "0 5px",
-              borderRadius: "4px",
-              backgroundColor: isCorrect
-                ? "#E8F5E9"
-                : isIncorrect
-                ? "#FFEBEE"
-                : "white",
-              fontFamily: "monospace",
-              fontSize: "16px",
-              verticalAlign: "middle",
-            }}
-            value={userValue}
-            onChange={(e) =>
-              handleInputChange(questionId, expression.id, e.target.value)
-            }
-            disabled={submitted}
-          />
-        );
+          return (
+            <input
+              key={`${questionId}-${expression.id}`}
+              type="text"
+              style={{
+                width: `${Math.max(correctAnswer.length * 10, 40)}px`,
+                height: "28px",
+                textAlign: "center",
+                border: submitted
+                  ? isCorrect
+                    ? "2px solid #4CAF50"
+                    : "2px solid #F44336"
+                  : "1px solid #9E9E9E",
+                margin: "0 4px",
+                padding: "0 5px",
+                borderRadius: "4px",
+                backgroundColor: isCorrect
+                  ? "#E8F5E9"
+                  : isIncorrect
+                  ? "#FFEBEE"
+                  : "white",
+                fontFamily: "monospace",
+                fontSize: "16px",
+                verticalAlign: "middle",
+              }}
+              value={userValue}
+              onChange={(e) =>
+                handleInputChange(questionId, expression.id, e.target.value)
+              }
+              disabled={submitted}
+            />
+          );
 
-      case "QMFraction":
-        return (
-          <div
-            key={`${questionId}-${index}`}
-            style={{
-              display: "inline-block",
-              textAlign: "center",
-              verticalAlign: "middle",
-              margin: "0 4px",
-              fontFamily: "serif",
-            }}
-          >
-            <div style={{ padding: "0 5px" }}>
+        case "QMFraction":
+          if (expression.latex) {
+            return (
+              <span key={`${questionId}-${index}`} style={{ verticalAlign: "middle" }}>
+                <InlineMath math={expression.latex} />
+              </span>
+            );
+          }
+          return (
+            <div
+              key={`${questionId}-${index}`}
+              style={{
+                display: "inline-block",
+                textAlign: "center",
+                verticalAlign: "middle",
+                margin: "0 4px",
+                fontFamily: "serif",
+              }}
+            >
+              <div style={{ padding: "0 5px" }}>
+                {renderExpression(
+                  expression.children?.[0],
+                  questionId,
+                  `${index}-num`
+                ) || "?"}
+              </div>
+              <div
+                style={{
+                  borderTop: "1px solid black",
+                  padding: "0 5px",
+                }}
+              >
+                {renderExpression(
+                  expression.children?.[1],
+                  questionId,
+                  `${index}-den`
+                ) || "?"}
+              </div>
+            </div>
+          );
+
+        case "QMExponent":
+          if (expression.latex) {
+            return (
+              <span key={`${questionId}-${index}`} style={{ verticalAlign: "middle" }}>
+                <InlineMath math={expression.latex} />
+              </span>
+            );
+          }
+          return (
+            <span
+              key={`${questionId}-${index}`}
+              style={{ position: "relative", fontFamily: "serif" }}
+            >
               {renderExpression(
                 expression.children?.[0],
                 questionId,
-                `${index}-num`
+                `${index}-base`
               ) || "?"}
-            </div>
-            <div
-              style={{
-                borderTop: "1px solid black",
-                padding: "0 5px",
-              }}
-            >
-              {renderExpression(
-                expression.children?.[1],
-                questionId,
-                `${index}-den`
-              ) || "?"}
-            </div>
-          </div>
-        );
-
-      case "QMExponent":
-        return (
-          <span
-            key={`${questionId}-${index}`}
-            style={{ position: "relative", fontFamily: "serif" }}
-          >
-            {renderExpression(
-              expression.children?.[0],
-              questionId,
-              `${index}-base`
-            ) || "?"}
-            <span
-              style={{
-                fontSize: "0.7em",
-                verticalAlign: "super",
-                position: "absolute",
-                top: "-0.5em",
-              }}
-            >
-              {renderExpression(
-                expression.children?.[1],
-                questionId,
-                `${index}-exponent`
-              ) || "?"}
+              <span
+                style={{
+                  fontSize: "0.7em",
+                  verticalAlign: "super",
+                  position: "absolute",
+                  top: "-0.5em",
+                }}
+              >
+                {renderExpression(
+                  expression.children?.[1],
+                  questionId,
+                  `${index}-exponent`
+                ) || "?"}
+              </span>
             </span>
-          </span>
-        );
+          );
 
-      case "QMAlgebraic":
-        return (
-          <span
-            key={`${questionId}-${index}`}
-            style={{
-              display: "inline-block",
-              fontFamily: "serif",
-              margin: "0 2px",
-            }}
-          >
-            {expression.children?.map((child, i) =>
-              renderExpression(child, questionId, `${index}-${i}`)
-            ) || "Empty"}
-          </span>
-        );
+        case "QMAlgebraic":
+          if (expression.latex) {
+            return (
+              <span key={`${questionId}-${index}`} style={{ verticalAlign: "middle" }}>
+                <InlineMath math={expression.latex} />
+              </span>
+            );
+          }
+          return (
+            <span
+              key={`${questionId}-${index}`}
+              style={{
+                display: "inline-block",
+                fontFamily: "serif",
+                margin: "0 2px",
+              }}
+            >
+              {expression.children?.map((child, i) =>
+                renderExpression(child, questionId, `${index}-${i}`)
+              ) || "Empty"}
+            </span>
+          );
 
-      case "QMEquation":
-        return (
-          <div
-            key={`${questionId}-${index}`}
-            style={{
-              margin: "15px 0",
-              padding: "15px",
-              backgroundColor: "#f8f9fa",
-              borderRadius: "8px",
-              borderLeft: "4px solid #3f51b5",
-            }}
-          >
-            {expression.children?.map((child, i) =>
-              renderExpression(child, questionId, `${index}-${i}`)
-            ) || "Empty"}
-          </div>
-        );
+        case "QMEquation":
+          if (expression.latex) {
+            return (
+              <div
+                key={`${questionId}-${index}`}
+                style={{
+                  margin: "15px 0",
+                  padding: "15px",
+                  backgroundColor: "#f8f9fa",
+                  borderRadius: "8px",
+                  borderLeft: "4px solid #3f51b5",
+                }}
+              >
+                <BlockMath math={expression.latex} />
+              </div>
+            );
+          }
+          return (
+            <div
+              key={`${questionId}-${index}`}
+              style={{
+                margin: "15px 0",
+                padding: "15px",
+                backgroundColor: "#f8f9fa",
+                borderRadius: "8px",
+                borderLeft: "4px solid #3f51b5",
+              }}
+            >
+              {expression.children?.map((child, i) =>
+                renderExpression(child, questionId, `${index}-${i}`)
+              ) || "Empty"}
+            </div>
+          );
 
-      case "QMHTML":
-        return (
-          <div
-            key={`${questionId}-${index}`}
-            dangerouslySetInnerHTML={{ __html: expression.content || "" }}
-            style={{
-              display: "inline-block",
-              margin: "5px 0",
-              lineHeight: "1.6",
-            }}
-          />
-        );
+        case "QMHTML":
+          return (
+            <div
+              key={`${questionId}-${index}`}
+              dangerouslySetInnerHTML={{ __html: expression.content || "" }}
+              style={{
+                display: "inline-block",
+                margin: "5px 0",
+                lineHeight: "1.6",
+              }}
+            />
+          );
 
-      default:
-        console.warn("Unknown expression type:", expression.objectType);
-        return (
-          <span key={`${questionId}-${index}`} style={{ color: "red" }}>
-            Unsupported type: {expression.objectType}
-          </span>
-        );
+        default:
+          console.warn("Unknown expression type:", expression.objectType);
+          return (
+            <span key={`${questionId}-${index}`} style={{ color: "red" }}>
+              Unsupported type: {expression.objectType}
+            </span>
+          );
+      }
+    } catch (error) {
+      console.error("Error rendering expression:", expression, error);
+      return (
+        <span key={`${questionId}-${index}`} style={{ color: "red" }}>
+          Error rendering {expression.objectType}
+        </span>
+      );
     }
   };
 
