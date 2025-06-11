@@ -18,7 +18,7 @@ const Quiz = () => {
   const [lessonName, setLessonName] = useState("");
   const [feedback, setFeedback] = useState({});
   const [showQuestion, setShowQuestion] = useState(true);
-  const [filledSequences, setFilledSequen ces] = useState([]);
+  const [filledSequences, setFilledSequences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [questions, setQuestions] = useState([]);
