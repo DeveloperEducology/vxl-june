@@ -9,6 +9,7 @@ import NumSortingComponent from "./NumSortingComponent";
 import SingleMathQuiz from "./SingleMathQuiz";
 import SingleSelect from "../pages/SingleSelect";
 import PictureAdditionQuiz from "./PictureAdditionQuiz";
+import SingleMathQuizTest from "./SingleMathQuizTest";
 
 const Quiz = () => {
   const navigate = useNavigate();
@@ -39,6 +40,40 @@ const Quiz = () => {
     total: 0,
     percentage: 0,
   });
+
+  const [answers, setAnswers] = React.useState({});
+  const [submitted, setSubmitted] = React.useState(false);
+  const [score, setScore] = React.useState({
+    correct: 0,
+    total: 0,
+    percentage: 0,
+  });
+
+  const onSubmit = (question) => {
+    let correct = 0;
+    let total = 0;
+
+    question.pieces.forEach((expr) => {
+      if (expr.objectType === "QMInput") {
+        total++;
+        const userAnswer = answers[question._id]?.[expr.id] || "";
+        if (String(userAnswer).trim() === String(expr.correctAnswer).trim()) {
+          correct++;
+        }
+      }
+    });
+    setTimeout(() => {setCurrentQuestionIndex((prev) => prev + 1);}, 2000); // Simulate processing delay
+    
+    const percentage = total > 0 ? (correct / total) * 100 : 0;
+    setScore({ correct, total, percentage });
+    setSubmitted(true);
+  };
+
+  const onReset = () => {
+    setAnswers({});
+    setSubmitted(false);
+    setScore({ correct: 0, total: 0, percentage: 0 });
+  };
 
   // Text-to-speech
   const [isReading, setIsReading] = useState(false);
@@ -79,7 +114,7 @@ const Quiz = () => {
         // console.log("Response from API:", questionsRes.data);
         const fetchedQuestions = questionsRes.data.questions;
         const lesson = questionsRes.data.lesson;
-        console.log("Fetched questions:", lesson);
+        console.log("Fetched questions:", fetchedQuestions);
 
         if (fetchedQuestions.length > 0) {
           setQuestions(fetchedQuestions);
@@ -103,7 +138,7 @@ const Quiz = () => {
     fetchQuestions();
   }, [lessonId]);
 
-  console.log("lessonname:", lessonName);
+  // console.log("lessonname:", lessonName);
 
   const question = questions[currentQuestionIndex];
 
@@ -453,9 +488,31 @@ const Quiz = () => {
             }}
           />
         );
+      case "EQUATION":
+        return (
+          // <SingleMathQuiz
+          //   question={question}
+          //   answers={mathAnswers}
+          //   setAnswers={setMathAnswers}
+          //   submitted={mathSubmitted}
+          //   onSubmit={handleMathSubmit}
+          //   onReset={handleMathReset}
+          //   score={mathScore}
+          // />
+
+          <SingleMathQuiz
+            question={question}
+            answers={answers}
+            setAnswers={setAnswers}
+            submitted={submitted}
+            onSubmit={onSubmit}
+            onReset={onReset}
+            score={score}
+          />
+        );
       case "TEST":
         return (
-          <SingleMathQuiz
+          <SingleMathQuizTest
             question={question}
             answers={mathAnswers}
             setAnswers={setMathAnswers}
@@ -1415,6 +1472,7 @@ const Quiz = () => {
                 "SINGLE_SELECT",
                 "picture-addition",
                 "table-quiz",
+                "EQUATION",
               ].includes(question?.type) && (
                 <div className="flex gap-10 mt-6">
                   <button

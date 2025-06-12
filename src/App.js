@@ -3,6 +3,9 @@ import "./App.css";
 import Home from "./pages/Home";
 import SubjectsPage from "./pages/SubjectsPage";
 import Quiz from "./pages/Quiz";
+import MathQuestionForm from "./components/editor/MathQuestionForm";
+import EditorWithMathRenderer from "./components/editor/EditorWithMathRenderer";
+import NumberSorting from "./components/NumberSorting";
 
 function App() {
   return (
@@ -10,6 +13,10 @@ function App() {
       
       <Route path="/" element={<Home />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/math-editor" element={<MathQuestionForm />} />
+      <Route path="/editor" element={<EditorWithMathRenderer />} />
+      <Route path="/numsort" element={<NumberSorting />} />
+
       <Route path="/subjects/:classId" element={<SubjectsPage />} />
       <Route
         path="/practice/:classId/:lessonId/:lessonName"
