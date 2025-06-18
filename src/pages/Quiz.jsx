@@ -10,6 +10,7 @@ import SingleMathQuiz from "./SingleMathQuiz";
 import SingleSelect from "../pages/SingleSelect";
 import PictureAdditionQuiz from "./PictureAdditionQuiz";
 import SingleMathQuizTest from "./SingleMathQuizTest";
+import MultiSelect from "./MultiSelect";
 
 const Quiz = () => {
   const navigate = useNavigate();
@@ -62,8 +63,10 @@ const Quiz = () => {
         }
       }
     });
-    setTimeout(() => {setCurrentQuestionIndex((prev) => prev + 1);}, 2000); // Simulate processing delay
-    
+    setTimeout(() => {
+      setCurrentQuestionIndex((prev) => prev + 1);
+    }, 2000); // Simulate processing delay
+
     const percentage = total > 0 ? (correct / total) * 100 : 0;
     setScore({ correct, total, percentage });
     setSubmitted(true);
@@ -457,6 +460,41 @@ const Quiz = () => {
       case "SINGLE_SELECT":
         return (
           <SingleSelect
+            data={{
+              prompt: question.prompt,
+              options: question.options || [],
+              feedback: question.feedback || {
+                correct: "Correct!",
+                incorrect: "Incorrect, please try again.",
+              },
+            }}
+            onNext={(isCorrect) => {
+              setAttemptedQuestions((prev) => prev + 1);
+              if (isCorrect) {
+                setCorrectAnswers((prev) => prev + 1);
+              }
+              const answer = isCorrect ? "correct" : "incorrect";
+              setUserAnswers({ ...userAnswers, [question._id]: answer });
+              setFeedback({
+                ...feedback,
+                [question._id]: isCorrect ? "✅ Correct!" : "❌ Incorrect!",
+              });
+              if (isCorrect) {
+                setShowQuestion(false);
+                setTimeout(() => {
+                  if (currentQuestionIndex < questions.length - 1) {
+                    setCurrentQuestionIndex((prev) => prev + 1);
+                    setShowQuestion(true);
+                  }
+                }, 1500);
+              }
+            }}
+          />
+        );
+
+      case "multi":
+        return (
+          <MultiSelect
             data={{
               prompt: question.prompt,
               options: question.options || [],

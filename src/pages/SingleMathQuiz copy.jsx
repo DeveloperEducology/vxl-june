@@ -2,6 +2,12 @@ import React from "react";
 import { InlineMath, BlockMath } from "react-katex";
 import "katex/dist/katex.min.css";
 
+const styles = {
+  questionText: {
+    marginBottom: "10px",
+  },
+};
+
 const SingleMathQuiz = ({
   question,
   answers,
@@ -10,6 +16,7 @@ const SingleMathQuiz = ({
   onSubmit,
   onReset,
   score,
+  onNext,
 }) => {
   const handleInputChange = (questionId, inputId, value) => {
     setAnswers((prev) => ({
@@ -21,24 +28,36 @@ const SingleMathQuiz = ({
     }));
   };
 
+  const flattenExpressions = (expressions) => {
+    if (!expressions || !Array.isArray(expressions)) return [];
+    return expressions.flatMap((expr) =>
+      expr && expr.children
+        ? [expr, ...flattenExpressions(expr.children)]
+        : expr
+        ? [expr]
+        : []
+    );
+  };
+
   const renderExpression = (expression, questionId, index) => {
-    if (!expression) return null;
+    if (!expression) {
+      console.warn("Null expression at index:", index);
+      return null;
+    }
 
     try {
-      const fontSize = expression.fontSize
-        ? `${expression.fontSize}px`
-        : "16px";
-      const style = { fontSize };
-
       switch (expression.objectType) {
         case "PlainText":
           return (
-            <span
-              key={`${questionId}-${index}`}
-              className="text-gray-800"
-              style={style}
-            >
+            <span key={`${questionId}-${index}`} className="text-gray-800 mb-2">
               {expression.text || ""}
+            </span>
+          );
+
+        case "QMDecimal":
+          return (
+            <span key={`${questionId}-${index}`} className="font-serif">
+              {expression.nonRepeatingPart || ""}
             </span>
           );
 
@@ -47,26 +66,36 @@ const SingleMathQuiz = ({
           const correctAnswer = String(expression.correctAnswer || "").trim();
           const isCorrect =
             submitted && String(userValue).trim() === correctAnswer;
-          const isIncorrect = submitted && !isCorrect;
+          const isIncorrect =
+            submitted && String(userValue).trim() !== correctAnswer;
+
+          console.log("QMInput validation:", {
+            questionId,
+            inputId: expression.id,
+            userValue,
+            correctAnswer,
+            isCorrect,
+          });
 
           return (
             <input
               key={`${questionId}-${expression.id}`}
               type="text"
-              placeholder={expression.placeholder || "Enter answer"}
-              className={`w-16 h-7 text-center border mx-1 p-1 rounded focus:outline-none ${
+              className={`w-${Math.max(
+                correctAnswer.length * 2,
+                10
+              )} h-7 text-center border ${
                 submitted
                   ? isCorrect
                     ? "border-green-500 bg-green-50"
                     : "border-red-500 bg-red-50"
                   : "border-gray-400"
-              }`}
+              } mx-1 p-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-base align-middle`}
               value={userValue}
               onChange={(e) =>
                 handleInputChange(questionId, expression.id, e.target.value)
               }
               disabled={submitted}
-              style={style}
             />
           );
 
@@ -78,7 +107,6 @@ const SingleMathQuiz = ({
               </span>
             );
           }
-
           return (
             <div
               key={`${questionId}-${index}`}
@@ -101,17 +129,64 @@ const SingleMathQuiz = ({
             </div>
           );
 
+        case "QMExponent":
+          if (expression.latex) {
+            return (
+              <span key={`${questionId}-${index}`} className="align-middle">
+                <InlineMath math={expression.latex} />
+              </span>
+            );
+          }
+          return (
+            <span
+              key={`${questionId}-${index}`}
+              className="relative font-serif"
+            >
+              {renderExpression(
+                expression.children?.[0],
+                questionId,
+                `${index}-base`
+              ) || "?"}
+              <span className="text-sm align-super absolute -top-2">
+                {renderExpression(
+                  expression.children?.[1],
+                  questionId,
+                  `${index}-exponent`
+                ) || "?"}
+              </span>
+            </span>
+          );
+
+        case "QMAlgebraic":
+          if (expression.latex) {
+            return (
+              <span key={`${questionId}-${index}`} className="align-middle">
+                <InlineMath math={expression.latex} />
+              </span>
+            );
+          }
+          return (
+            <span
+              key={`${questionId}-${index}`}
+              className="inline-block font-serif mx-0.5"
+            >
+              {expression.children?.map((child, i) =>
+                renderExpression(child, questionId, `${index}-${i}`)
+              ) || "Empty"}
+            </span>
+          );
+        case "QMAlgebraic":
         case "QMEquation":
           if (expression.latex) {
             return (
-              <BlockMath
+              <div
                 key={`${questionId}-${index}`}
-                math={expression.latex}
-                style={style}
-              />
+                className="my-4 p-4 bg-gray-50 rounded-lg border-l-4 border-indigo-600"
+              >
+                <BlockMath math={expression.latex} />
+              </div>
             );
           }
-
           return (
             <div
               key={`${questionId}-${index}`}
@@ -119,8 +194,17 @@ const SingleMathQuiz = ({
             >
               {expression.children?.map((child, i) =>
                 renderExpression(child, questionId, `${index}-${i}`)
-              )}
+              ) || "Empty"}
             </div>
+          );
+
+        case "QMHTML":
+          return (
+            <div
+              key={`${questionId}-${index}`}
+              className="inline-block my-1 leading-6"
+              dangerouslySetInnerHTML={{ __html: expression.content || "" }}
+            />
           );
 
         default:
@@ -135,46 +219,40 @@ const SingleMathQuiz = ({
       console.error("Error rendering expression:", expression, error);
       return (
         <span key={`${questionId}-${index}`} className="text-red-500">
-          Error rendering {expression?.objectType || "unknown"}
+          Error rendering {expression.objectType}
         </span>
       );
     }
   };
 
-  const renderPieces = () => {
+  const renderPieces = (pieces) => {
     const groupedPieces = [];
     let currentGroup = [];
+    let currentContainerType = "row";
 
-    // Helper to determine layout direction
-    const getLayoutStyle = () => {
-      return question.layoutStyle === "column" ? "column" : "row";
-    };
+    pieces.forEach((piece, index) => {
+      const isLastPiece = index === pieces.length - 1;
+      const style = piece.style || "row";
+      const nextObject = piece.nextObject || "continue-row";
 
-    question.pieces.forEach((piece, index) => {
       currentGroup.push({ ...piece, index });
 
-      // Group until nextObject is new-column or end of array
-      if (
-        index === question.pieces.length - 1 ||
-        piece.nextObject === "new-column"
-      ) {
-        const layoutStyle = getLayoutStyle();
-
+      if (style === "column" || isLastPiece || nextObject === "new-column") {
+        const containerClasses =
+          currentContainerType === "row"
+            ? "flex flex-row flex-wrap gap-2 items-center"
+            : "flex flex-col gap-2";
         groupedPieces.push(
-          <div
-            key={`group-${index}`}
-            className={`flex ${
-              layoutStyle === "column"
-                ? "flex-col items-start gap-2"
-                : "flex-row items-center gap-4"
-            }`}
-          >
+          <div key={`group-${index}`} className={containerClasses}>
             {currentGroup.map((p) =>
               renderExpression(p, question._id, p.index)
             )}
           </div>
         );
         currentGroup = [];
+        currentContainerType = style === "column" ? "column" : "row";
+      } else if (style === "row" && nextObject === "continue-row") {
+        currentContainerType = "row";
       }
     });
 
@@ -191,12 +269,10 @@ const SingleMathQuiz = ({
 
   return (
     <div className="font-sans max-w-3xl mx-auto p-6 text-gray-800">
-      {/* Question Box */}
       <div className="text-4xl leading-8 mb-8 min-h-[120px] p-5 bg-white rounded-lg shadow-sm">
-        {renderPieces()}
+        {renderPieces(question.pieces)}
       </div>
 
-      {/* Action Buttons */}
       <div className="flex justify-center gap-3 mt-5">
         <button
           onClick={() => onSubmit(question)}
@@ -207,6 +283,7 @@ const SingleMathQuiz = ({
         >
           {submitted ? "✓ Submitted" : "Submit Answer"}
         </button>
+
         <button
           onClick={() => onReset()}
           className="px-6 py-3 bg-red-500 text-white rounded-lg font-medium shadow-sm hover:bg-red-600 transition-colors"
@@ -216,7 +293,6 @@ const SingleMathQuiz = ({
         </button>
       </div>
 
-      {/* Score Display */}
       {submitted && (
         <div
           className={`mt-6 p-5 bg-gray-100 rounded-lg border-l-4 ${

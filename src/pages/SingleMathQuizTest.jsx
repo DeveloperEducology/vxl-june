@@ -237,7 +237,7 @@ const SingleMathQuizTest = ({
                 padding: "15px",
                 backgroundColor: "#f8f9fa",
                 borderRadius: "8px",
-                borderLeft: "4px solid #3f51b5",
+                // borderLeft: "4px solid #3f51b5",
               }}
             >
               {expression.children?.map((child, i) =>
@@ -300,11 +300,11 @@ const SingleMathQuizTest = ({
           fontSize: "18px",
           lineHeight: "1.8",
           marginBottom: "30px",
-          minHeight: "120px",
-          padding: "20px",
-          backgroundColor: "#ffffff",
-          borderRadius: "10px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          // minHeight: "120px",
+          // padding: "20px",
+          // backgroundColor: "#ffffff",
+          // borderRadius: "10px",
+          // boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         }}
       >
         {question.pieces.map((piece, index) =>
