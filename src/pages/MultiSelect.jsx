@@ -20,42 +20,93 @@ const MultiSelect = ({ data, onNext }) => {
     onNext(isCorrect);
   };
 
-  return (
+return (
     <div className="multiselect-container">
-      <p style={{ fontWeight: "bold", marginBottom: 12 }}>{data?.prompt}</p>
-      {data?.options.map((opt, idx) => {
-        const label = opt.text || "[Image option]";
-        return (
-          <label key={idx} className="multiselect-option">
-            <input
-              type="checkbox"
-              checked={selected.includes(opt)}
-              onChange={() => toggleOption(opt)}
-            />
-            <span className="multiselect-label">
-              {opt.image ? (
-                <img
-                  src={opt.image}
-                  alt={label}
-                  style={{
-                    maxHeight: "50px",
-                    maxWidth: "150px",
-                    objectFit: "contain",
-                    verticalAlign: "middle",
-                  }}
-                />
-              ) : (
-                label
-              )}
-            </span>
-          </label>
-        );
-      })}
-      <button className="submit-btn" onClick={handleSubmit}>
-        Submit
-      </button>
+        <p style={{ fontWeight: "bold", marginBottom: 12 }}>{data?.prompt}</p>
+        <div
+            className="multiselect-options-wrapper"
+            style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 24,
+                // justifyContent: "center"
+            }}
+        >
+            {data?.options.map((opt, idx) => {
+                const label = opt.text || "[Image option]";
+                const isSelected = selected.includes(opt);
+                return (
+                    <div
+                        key={idx}
+                        className={`multiselect-option${isSelected ? " selected" : ""}`}
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            border: isSelected ? "2px solid #007bff" : "2px solid #ccc",
+                            borderRadius: 8,
+                            padding: 12,
+                            cursor: "pointer",
+                            background: isSelected ? "#e6f0ff" : "#fff",
+                            boxShadow: isSelected ? "0 0 8px #007bff44" : "none",
+                            transition: "all 0.2s",
+                            minWidth: 140,
+                            maxWidth: 200,
+                            flex: "1 1 140px",
+                            boxSizing: "border-box"
+                        }}
+                        onClick={() => toggleOption(opt)}
+                    >
+                        <div className="multiselect-label">
+                            {opt.image ? (
+                                <div style={{ display: "flex", flexDirection: "column" }}>
+                                    <img
+                                        src={opt.image}
+                                        alt={label}
+                                        style={{ width: "100%", maxWidth: "150px", height: "auto" }}
+                                        className="option-image"
+                                    />
+                                    {opt.text && (
+                                        <div className="option-text" style={{ marginTop: 8, textAlign: "center" }}>
+                                            {opt.text}
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                label
+                            )}
+                        </div>
+                        
+                    </div>
+                );
+            })}
+        </div>
+        <button className="submit-btn" onClick={handleSubmit} style={{ marginTop: 24, width: "100%", maxWidth: 320 }}>
+            Submit
+        </button>
+        <style>
+            {`
+            @media (max-width: 600px) {
+                .multiselect-options-wrapper {
+                    flex-direction: column !important;
+                    gap: 16px !important;
+                }
+                .multiselect-option {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                }
+                .option-image {
+                    max-width: 100% !important;
+                    height: auto !important;
+                }
+                .submit-btn {
+                    width: 100% !important;
+                }
+            }
+            `}
+        </style>
     </div>
-  );
+);
 };
 
 export default MultiSelect;

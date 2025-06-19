@@ -65,7 +65,8 @@ const Quiz = () => {
     });
     setTimeout(() => {
       setCurrentQuestionIndex((prev) => prev + 1);
-    }, 2000); // Simulate processing delay
+      setAnswers({});
+    }, 1000); // Simulate processing delay
 
     const percentage = total > 0 ? (correct / total) * 100 : 0;
     setScore({ correct, total, percentage });
@@ -325,6 +326,7 @@ const Quiz = () => {
     setFeedback((prev) => ({ ...prev, [question?._id]: "" }));
     setMathSubmitted(false);
     setMathAnswers({});
+    setAnswers({});
     setMathScore({ correct: 0, total: 0, percentage: 0 });
   }, [currentQuestionIndex, question?._id]);
 
@@ -975,7 +977,7 @@ const Quiz = () => {
                             return (
                               <input
                                 key={idx}
-                                type="number"
+                                type="text"
                                 ref={ansInput}
                                 onFocus={(e) => e.target.select()}
                                 value={sequenceAnswers[nullIndex] || ""}
@@ -1511,6 +1513,7 @@ const Quiz = () => {
                 "picture-addition",
                 "table-quiz",
                 "EQUATION",
+                "multi"
               ].includes(question?.type) && (
                 <div className="flex gap-10 mt-6">
                   <button
@@ -1529,6 +1532,7 @@ const Quiz = () => {
                   >
                     Submit
                   </button>
+                  
                   <button
                     onClick={goToNextQuestion}
                     disabled={currentQuestionIndex === questions.length - 1}
