@@ -6,12 +6,14 @@ import Quiz from "./pages/Quiz";
 import MathQuestionForm from "./components/editor/MathQuestionForm";
 import EditorWithMathRenderer from "./components/editor/EditorWithMathRenderer";
 import NumberSorting from "./components/NumberSorting";
+import CLASS2CHAPTER1 from "./pages/CLASS2CHAPTER1";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/cl2-ch1" element={<CLASS2CHAPTER1 />} />
       <Route path="/math-editor" element={<MathQuestionForm />} />
       <Route path="/editor" element={<EditorWithMathRenderer />} />
       <Route path="/numsort" element={<NumberSorting />} />
