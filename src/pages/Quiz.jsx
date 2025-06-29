@@ -1079,23 +1079,27 @@ const Quiz = () => {
       case "picture-addition":
         return (
           <PictureAdditionQuiz
-            question={question}
-            onAnswer={(isCorrect) => {
+            lesson={question}
+            userAnswer={userAnswers[question._id] || ""}
+            onNext={() => {
+              if (currentQuestionIndex < questions.length - 1) {
+                setCurrentQuestionIndex(currentQuestionIndex + 1);
+              }
+            }}
+            setUserAnswer={(val) => {
+              setUserAnswers({ ...userAnswers, [question._id]: val });
+              setFeedback({ ...feedback, [question._id]: "" });
+            }}
+            onSubmit={(isCorrect, userInputSummary) => {
               setAttemptedQuestions((prev) => prev + 1);
               if (isCorrect) {
                 setCorrectAnswers((prev) => prev + 1);
               }
-              setUserAnswers({
-                ...userAnswers,
-                [question._id]: isCorrect
-                  ? String(question.number1 + question.number2)
-                  : userAnswers[question._id] || "",
-              });
               const feedbackMessage = isCorrect
                 ? "✅ Correct!"
                 : `❌ Incorrect, the correct answer is ${
-                    question.number1 + question.number2
-                  }.`;
+                    question.correctAnswer
+                  }. You entered: ${userInputSummary.join(", ")}`;
               setFeedback({ ...feedback, [question._id]: feedbackMessage });
 
               if (isCorrect) {
@@ -1116,10 +1120,6 @@ const Quiz = () => {
                   }
                 }, 1500);
               }
-            }}
-            onReset={() => {
-              setFeedback({ ...feedback, [question._id]: "" });
-              setUserAnswers({ ...userAnswers, [question._id]: "" });
             }}
           />
         );
@@ -1513,7 +1513,7 @@ const Quiz = () => {
                 "picture-addition",
                 "table-quiz",
                 "EQUATION",
-                "multi"
+                "multi",
               ].includes(question?.type) && (
                 <div className="flex gap-10 mt-6">
                   <button
@@ -1532,7 +1532,7 @@ const Quiz = () => {
                   >
                     Submit
                   </button>
-                  
+
                   <button
                     onClick={goToNextQuestion}
                     disabled={currentQuestionIndex === questions.length - 1}

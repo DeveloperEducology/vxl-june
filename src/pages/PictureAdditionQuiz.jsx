@@ -1,197 +1,125 @@
-import React, { useState, useEffect } from "react";
-import DOMPurify from "dompurify";
-import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
 
-const PictureAdditionQuiz = ({ question, onAnswer, onReset }) => {
-  const [answer, setAnswer] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [feedback, setFeedback] = useState("");
+export default function PictureAdditionQuiz({ lesson, onNext }) {
+  const [userAnswers, setUserAnswers] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [feedback, setFeedback] = useState([]);
 
-  // Reset state when question changes
   useEffect(() => {
-    setAnswer("");
-    setIsSubmitted(false);
-    setFeedback("");
-  }, [question]);
+    setUserAnswers([]);
+    setSubmitted(false);
+    setFeedback([]);
+  }, [lesson]);
 
-  const handleCheck = () => {
-    const correctAnswer = question.number1 + question.number2;
-    const isCorrect = parseInt(answer) === correctAnswer;
+  const handleInputChange = (index, value) => {
+    const updated = [...userAnswers];
+    updated[index] = value;
+    setUserAnswers(updated);
+  };
 
-    setIsSubmitted(true);
-    setFeedback(
-      isCorrect
-        ? "✅ Correct!"
-        : `❌ Incorrect. The correct answer is ${correctAnswer}.`
+  const handleSubmit = () => {
+    const result = lesson.correctAnswer.map((ans, idx) =>
+      userAnswers[idx]?.trim() === ans
+        ? "✅ Correct"
+        : `❌ Correct answer: ${ans}`
     );
-
-    onAnswer(isCorrect);
+    setFeedback(result);
+    setSubmitted(true);
   };
-
-  const handleReset = () => {
-    setAnswer("");
-    setIsSubmitted(false);
-    setFeedback("");
-    onReset();
-  };
-
-  const renderImages = (count, imageUrl) => {
-    return Array.from({ length: count }, (_, i) => (
-      <img
-        key={i}
-        src={imageUrl}
-        alt={`${question.text} icon ${i + 1}`}
-        loading="lazy"
-        style={question.style}
-        className="w-10 h-10 object-contain mx-1"
-        onError={(e) =>
-          (e.target.src = "https://via.placeholder.com/64?text=Image+Not+Found")
-        }
-      />
-    ));
-  };
-
-  if (!question?.number1 || !question?.number2 || !question?.image) {
-    return (
-      <div className="text-red-500 py-4 text-center" role="alert">
-        Invalid quiz data: Missing required fields
-      </div>
-    );
-  }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg">
-      {/* Question Prompt */}
-      <div
-        className="mb-6 text-xl font-semibold text-gray-800"
-        dangerouslySetInnerHTML={{
-          __html: DOMPurify.sanitize(question.text || question.prompt),
-        }}
-        role="region"
-        aria-label="Question prompt"
-      />
-
-      {/* Quiz Grid */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        {/* Row 1: First set of images and number */}
-        <div className="flex flex-wrap justify-center items-center gap-1">
-          {renderImages(question.number1, question.image)}
-        </div>
-        <div className="flex items-center justify-center text-xl font-medium text-gray-700">
-          {question.number1}
-        </div>
-
-        {/* Row 2: Second set of images and number */}
-        <div className="flex flex-wrap justify-center items-center gap-2 border-t-2 border-gray-300 pt-4">
-          {renderImages(question.number2, question.image)}
-        </div>
-        <div className="flex items-center justify-center text-xl font-medium text-gray-700 border-t-2 border-gray-300 pt-1">
-          {question.number2}
-        </div>
-
-        {/* Row 3: Equal sign and input */}
-        <div className="flex items-center justify-center text-2xl font-bold">
-          =
-        </div>
-        <div className="flex items-center justify-center">
-          <input
-            type="number"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            className={`
-              p-2 border rounded w-20 text-center focus:outline-none focus:ring-2
-              ${
-                isSubmitted
-                  ? feedback.startsWith("✅")
-                    ? "border-green-500 focus:ring-green-500"
-                    : "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-green-500"
-              }
-            `}
-            disabled={isSubmitted}
-            aria-label="Answer input"
-            placeholder="?"
-          />
-        </div>
+    <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-3xl transition-all duration-300 transform hover:scale-105">
+      {/* Display Questions */}
+      <div className="mb-6 space-y-4">
+        {(() => {
+          let inputIndex = 0;
+          return lesson.text?.map((line, idx) => {
+            const parts = line.split(/(null)/g);
+            return (
+              <p
+                key={idx}
+                className={`${
+                  idx === 0
+                    ? "text-lg font-medium text-gray-700"
+                    : "text-xl font-bold text-green-800"
+                }`}
+              >
+                {parts.map((part, i) => {
+                  if (part === "null") {
+                    const thisIndex = inputIndex++;
+                    return (
+                      <span key={`${idx}-${i}`}>
+                        <input
+                          type="text"
+                          value={userAnswers[thisIndex] || ""}
+                          onChange={(e) =>
+                            handleInputChange(thisIndex, e.target.value)
+                          }
+                          disabled={submitted}
+                          className={`inline-block w-16 mx-1 px-2 py-1 border-b-2 text-center text-lg border-gray-400 bg-transparent focus:outline-none ${
+                            submitted
+                              ? "bg-gray-100 text-gray-500"
+                              : "focus:border-indigo-800"
+                          }`}
+                          placeholder="?"
+                        />
+                        {submitted && feedback[thisIndex] && (
+                          <span
+                            className={`ml-1 text-sm ${
+                              feedback[thisIndex].startsWith("✅")
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {feedback[thisIndex]}
+                          </span>
+                        )}
+                      </span>
+                    );
+                  } else {
+                    return <span key={`${idx}-${i}`}>{part}</span>;
+                  }
+                })}
+              </p>
+            );
+          });
+        })()}
       </div>
 
-      <div className="flex justify-left gap-4">
-        {!isSubmitted ? (
+      {/* Buttons */}
+      {lesson.isLast ? null : (
+        <div className="flex justify-between mt-6">
           <button
-            onClick={handleCheck}
-            disabled={!answer}
-            className={`
-            px-8 py-3 rounded-lg text-white font-semibold transition-all duration-300
-            ${
-              answer
-                ? "bg-green-600 hover:bg-green-700"
-                : "bg-gray-400 cursor-not-allowed"
+            onClick={handleSubmit}
+            disabled={
+              submitted ||
+              userAnswers.length < lesson.correctAnswer.length ||
+              userAnswers.some((a) => !a?.trim())
             }
-          `}
-            aria-label="Submit answer"
+            className={`px-4 py-2 rounded-md font-medium transition-colors ${
+              submitted ||
+              userAnswers.length < lesson.correctAnswer.length ||
+              userAnswers.some((a) => !a?.trim())
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-indigo-600 text-white hover:bg-indigo-700"
+            }`}
           >
             Submit
           </button>
-        ) : (
-          <button
-            onClick={handleReset}
-            className="px-8 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all duration-300"
-            aria-label="Try again or next question"
-          >
-            {feedback.startsWith("✅") ? "Next Question" : "Try Again"}
-          </button>
-        )}
-      </div>
 
-      {/* Feedback */}
-      {feedback && (
-        <div
-          className={`
-          mt-6 p-4 rounded-lg text-base animate-fade-in
-          ${
-            feedback.startsWith("✅")
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          }
-          flex justify-center items-center text-center text-2xl font-bold
-            `}
-          role="alert"
-        >
-          {feedback}
+          <button
+            onClick={onNext}
+            disabled={!submitted}
+            className={`px-4 py-2 rounded-md font-medium transition-colors ${
+              !submitted
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-purple-600 text-white hover:bg-purple-700"
+            }`}
+          >
+            Next
+          </button>
         </div>
       )}
-
-      {/* CSS for animations */}
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fadeIn 0.3s ease-in-out;
-        }
-      `}</style>
     </div>
   );
-};
-
-PictureAdditionQuiz.propTypes = {
-  question: PropTypes.shape({
-    _id: PropTypes.string,
-    text: PropTypes.string,
-    prompt: PropTypes.string,
-    number1: PropTypes.number.isRequired,
-    number2: PropTypes.number.isRequired,
-    image: PropTypes.string.isRequired,
-  }).isRequired,
-  onAnswer: PropTypes.func.isRequired,
-  onReset: PropTypes.func.isRequired,
-};
-
-export default PictureAdditionQuiz;
+}
