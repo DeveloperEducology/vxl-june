@@ -11,6 +11,7 @@ import SingleSelect from "../pages/SingleSelect";
 import PictureAdditionQuiz from "./PictureAdditionQuiz";
 import SingleMathQuizTest from "./SingleMathQuizTest";
 import MultiSelect from "./MultiSelect";
+import PictureMCQ from "../othertesting/sss";
 
 const Quiz = () => {
   const navigate = useNavigate();
@@ -1076,9 +1077,57 @@ const Quiz = () => {
           </>
         );
 
+    
       case "picture-addition":
         return (
           <PictureAdditionQuiz
+            lesson={question}
+            userAnswer={userAnswers[question._id] || ""}
+            onNext={() => {
+              if (currentQuestionIndex < questions.length - 1) {
+                setCurrentQuestionIndex(currentQuestionIndex + 1);
+              }
+            }}
+            setUserAnswer={(val) => {
+              setUserAnswers({ ...userAnswers, [question._id]: val });
+              setFeedback({ ...feedback, [question._id]: "" });
+            }}
+            onSubmit={(isCorrect, userInputSummary) => {
+              setAttemptedQuestions((prev) => prev + 1);
+              if (isCorrect) {
+                setCorrectAnswers((prev) => prev + 1);
+              }
+              const feedbackMessage = isCorrect
+                ? "✅ Correct!"
+                : `❌ Incorrect, the correct answer is ${
+                    question.correctAnswer
+                  }. You entered: ${userInputSummary.join(", ")}`;
+              setFeedback({ ...feedback, [question._id]: feedbackMessage });
+
+              if (isCorrect) {
+                setShowQuestion(false);
+                setTimeout(() => {
+                  if (currentQuestionIndex < questions.length - 1) {
+                    setCurrentQuestionIndex((prev) => prev + 1);
+                    setShowQuestion(true);
+                    setFeedback({
+                      ...feedback,
+                      [questions[currentQuestionIndex + 1]?._id]: "",
+                    });
+                  } else {
+                    setFeedback({
+                      ...feedback,
+                      [question._id]: "✅ Correct! Quiz completed!",
+                    });
+                  }
+                }, 1500);
+              }
+            }}
+          />
+        );
+      case "mcq":
+        return (
+          <PictureMCQ
             lesson={question}
             userAnswer={userAnswers[question._id] || ""}
             onNext={() => {
@@ -1511,6 +1560,7 @@ const Quiz = () => {
                 "TEST",
                 "SINGLE_SELECT",
                 "picture-addition",
+                "mcq",
                 "table-quiz",
                 "EQUATION",
                 "multi",

@@ -1,125 +1,108 @@
 import { useState, useEffect } from "react";
 
-export default function PictureAdditionQuiz({ lesson, onNext }) {
-  const [userAnswers, setUserAnswers] = useState([]);
-  const [submitted, setSubmitted] = useState(false);
+export default function PictureAdditionQuiz({
+  lesson,
+  userAnswer,
+  setUserAnswer,
+  onSubmit,
+  onNext,
+}) {
   const [feedback, setFeedback] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    setUserAnswers([]);
-    setSubmitted(false);
     setFeedback([]);
+    setSubmitted(false);
   }, [lesson]);
 
-  const handleInputChange = (index, value) => {
-    const updated = [...userAnswers];
-    updated[index] = value;
-    setUserAnswers(updated);
+  const handleChange = (index, value) => {
+    const current = Array.isArray(userAnswer) ? [...userAnswer] : [];
+    while (current.length <= index) {
+      current.push("");
+    }
+    current[index] = value;
+    setUserAnswer(current);
   };
 
   const handleSubmit = () => {
+    const isCorrect =
+      JSON.stringify(userAnswer.map((a) => a.trim())) ===
+      JSON.stringify(lesson.correctAnswer);
     const result = lesson.correctAnswer.map((ans, idx) =>
-      userAnswers[idx]?.trim() === ans
+      userAnswer?.[idx]?.trim() === ans
         ? "✅ Correct"
         : `❌ Correct answer: ${ans}`
     );
     setFeedback(result);
     setSubmitted(true);
+    onSubmit(isCorrect, userAnswer);
   };
 
-  return (
-    <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-3xl transition-all duration-300 transform hover:scale-105">
-      {/* Display Questions */}
-      <div className="mb-6 space-y-4">
-        {(() => {
-          let inputIndex = 0;
-          return lesson.text?.map((line, idx) => {
-            const parts = line.split(/(null)/g);
-            return (
-              <p
-                key={idx}
-                className={`${
-                  idx === 0
-                    ? "text-lg font-medium text-gray-700"
-                    : "text-xl font-bold text-green-800"
-                }`}
-              >
-                {parts.map((part, i) => {
-                  if (part === "null") {
-                    const thisIndex = inputIndex++;
-                    return (
-                      <span key={`${idx}-${i}`}>
-                        <input
-                          type="text"
-                          value={userAnswers[thisIndex] || ""}
-                          onChange={(e) =>
-                            handleInputChange(thisIndex, e.target.value)
-                          }
-                          disabled={submitted}
-                          className={`inline-block w-16 mx-1 px-2 py-1 border-b-2 text-center text-lg border-gray-400 bg-transparent focus:outline-none ${
-                            submitted
-                              ? "bg-gray-100 text-gray-500"
-                              : "focus:border-indigo-800"
-                          }`}
-                          placeholder="?"
-                        />
-                        {submitted && feedback[thisIndex] && (
-                          <span
-                            className={`ml-1 text-sm ${
-                              feedback[thisIndex].startsWith("✅")
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {feedback[thisIndex]}
-                          </span>
-                        )}
-                      </span>
-                    );
-                  } else {
-                    return <span key={`${idx}-${i}`}>{part}</span>;
-                  }
-                })}
-              </p>
-            );
-          });
-        })()}
-      </div>
+  // Move inputIndex outside the map to keep it global
+  let inputIndex = 0;
 
-      {/* Buttons */}
-      {lesson.isLast ? null : (
-        <div className="flex justify-between mt-6">
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-md space-y-4">
+      {lesson.text.map((line, idx) => {
+        const parts = line.split(/(null)/g);
+        return (
+          <p key={idx} className="text-xl font-semibold">
+            {parts.map((part, i) => {
+              if (part === "null") {
+                const index = inputIndex++;
+                return (
+                  <input
+                    key={i}
+                    value={userAnswer?.[index] || ""}
+                    onChange={(e) => handleChange(index, e.target.value)}
+                    disabled={submitted}
+                    className="w-16 border-b-2 mx-2 text-center"
+                    placeholder="?"
+                  />
+                );
+              } else {
+                return <span key={i}>{part}</span>;
+              }
+            })}
+          </p>
+        );
+      })}
+
+      {feedback.map((msg, idx) => (
+        <p
+          key={idx}
+          className={`text-sm ${
+            msg.startsWith("✅") ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          {msg}
+        </p>
+      ))}
+
+      <div className="flex gap-4 mt-4">
+        {!submitted && (
           <button
             onClick={handleSubmit}
             disabled={
-              submitted ||
-              userAnswers.length < lesson.correctAnswer.length ||
-              userAnswers.some((a) => !a?.trim())
+              !userAnswer ||
+              userAnswer.length < lesson.correctAnswer.length ||
+              userAnswer.some((a) => !a?.trim())
             }
-            className={`px-4 py-2 rounded-md font-medium transition-colors ${
-              submitted ||
-              userAnswers.length < lesson.correctAnswer.length ||
-              userAnswers.some((a) => !a?.trim())
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-indigo-600 text-white hover:bg-indigo-700"
-            }`}
+            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
           >
             Submit
           </button>
+        )}
 
+        {submitted && (
           <button
             onClick={onNext}
-            disabled={!submitted}
-            className={`px-4 py-2 rounded-md font-medium transition-colors ${
-              !submitted
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-purple-600 text-white hover:bg-purple-700"
-            }`}
+            className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
           >
             Next
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
