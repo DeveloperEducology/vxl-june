@@ -38,15 +38,52 @@ export default function PictureAdditionQuiz({
     onSubmit(isCorrect, userAnswer);
   };
 
-  // Move inputIndex outside the map to keep it global
+  // Input index for multiple blanks
   let inputIndex = 0;
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md space-y-4">
-      {lesson.text.map((line, idx) => {
+    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md space-y-4 w-full max-w-2xl mx-auto">
+      {/* Show Title */}
+      {lesson.title && (
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+          {lesson.title}
+        </h2>
+      )}
+
+      {/* Show Illustration Emojis (Big) in a row */}
+      {lesson.illustration && lesson.illustration.length > 0 && (
+        <div className="flex flex-row flex-wrap gap-4 sm:gap-6 items-left justify-left text-4xl sm:text-6xl leading-snug font-normal">
+          {lesson.illustration.map((line, idx) => (
+            <span
+              key={`illustration-${idx}`}
+              style={{
+                backgroundColor: "#bbbfb8",
+                padding: 2,
+                borderRadius: 5,
+                margin: 2,
+                display: "inline-block",
+              }}
+            >
+              {line}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Show Question with Inputs */}
+      {lesson.text?.map((line, idx) => {
         const parts = line.split(/(null)/g);
+        const isEmojiLine = /^[^a-zA-Z0-9\n]*$/.test(line.trim());
+
         return (
-          <p key={idx} className="text-xl font-semibold">
+          <p
+            key={`text-${idx}`}
+            className={`flex flex-wrap items-center ${
+              isEmojiLine
+                ? "text-4xl sm:text-6xl leading-snug text-left"
+                : "text-lg sm:text-xl font-semibold"
+            }`}
+          >
             {parts.map((part, i) => {
               if (part === "null") {
                 const index = inputIndex++;
@@ -56,7 +93,7 @@ export default function PictureAdditionQuiz({
                     value={userAnswer?.[index] || ""}
                     onChange={(e) => handleChange(index, e.target.value)}
                     disabled={submitted}
-                    className="w-16 border-b-2 mx-2 text-center"
+                    className="w-12 sm:w-16 border-b-2 mx-1 sm:mx-2 text-center text-xl sm:text-2xl"
                     placeholder="?"
                   />
                 );
@@ -68,10 +105,11 @@ export default function PictureAdditionQuiz({
         );
       })}
 
+      {/* Feedback */}
       {feedback.map((msg, idx) => (
         <p
           key={idx}
-          className={`text-sm ${
+          className={`text-xs sm:text-sm ${
             msg.startsWith("✅") ? "text-green-600" : "text-red-600"
           }`}
         >
@@ -79,7 +117,8 @@ export default function PictureAdditionQuiz({
         </p>
       ))}
 
-      <div className="flex gap-4 mt-4">
+      {/* Buttons */}
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4">
         {!submitted && (
           <button
             onClick={handleSubmit}
@@ -88,7 +127,7 @@ export default function PictureAdditionQuiz({
               userAnswer.length < lesson.correctAnswer.length ||
               userAnswer.some((a) => !a?.trim())
             }
-            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 w-full sm:w-auto"
           >
             Submit
           </button>
@@ -97,7 +136,7 @@ export default function PictureAdditionQuiz({
         {submitted && (
           <button
             onClick={onNext}
-            className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+            className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 w-full sm:w-auto"
           >
             Next
           </button>

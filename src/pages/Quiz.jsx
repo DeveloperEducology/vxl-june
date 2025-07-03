@@ -1547,7 +1547,7 @@ const Quiz = () => {
           }
         }
       `}</style>
-      <p style={{ fontSize: "10px", marginBottom: "8px" }}>{lessonName}</p>
+      <p style={{ fontSize: "10px", marginBottom: "8px" }}>{lessonName } - {question?.type} </p>
       <div className="quiz-container">
         <div className="justify-left items-left">
           {showQuestion ? renderQuestion() : null}
@@ -1560,7 +1560,7 @@ const Quiz = () => {
                 "TEST",
                 "SINGLE_SELECT",
                 "picture-addition",
-                "mcq",
+                // "mcq",
                 "table-quiz",
                 "EQUATION",
                 "multi",

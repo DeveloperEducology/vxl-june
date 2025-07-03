@@ -9,12 +9,16 @@ import NumberSorting from "./components/NumberSorting";
 import CLASS2CHAPTER1 from "./othertesting/CLASS2CHAPTER1";
 import Ordering from "./othertesting/Ordering";
 import TesingQuiz from "./othertesting/TestingQuix";
+import WordGame from "./othertesting/WordGame";
+import GridExerciseQuiz from "./othertesting/GridNumbers";
 
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/wordgame" element={<WordGame />} />
+      <Route path="/grid" element={<GridExerciseQuiz />} />
       <Route path="/home" element={<Home />} />
       <Route path="/tt" element={<TesingQuiz />} />
       <Route path="/ordering" element={<Ordering />} />
