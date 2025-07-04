@@ -9,6 +9,7 @@ export default function PictureMCQ({
 }) {
   const [feedback, setFeedback] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [showYoutube, setShowYoutube] = useState(false);
 
   useEffect(() => {
     setFeedback("");
@@ -29,24 +30,64 @@ export default function PictureMCQ({
   };
 
   const handleSelectMCQ = (value) => {
+    readAloud(value);
     setUserAnswer(value);
   };
 
   const handleSubmit = () => {
     const selected = lesson.options.find((opt) => opt.text === userAnswer);
     const isCorrect = selected?.isCorrect;
+    // Find the correct answer(s)
+    const correctOption = lesson.options.find((opt) => opt.isCorrect);
+    const correctAnswer = correctOption ? correctOption.text : null;
+
     setFeedback(
-      isCorrect ? lesson.feedback.correct : lesson.feedback.incorrect
+      isCorrect
+        ? lesson.feedback?.correct
+        : `${lesson.feedback?.incorrect}${
+            correctAnswer ? ` (Correct: ${correctAnswer})` : ""
+          }`
     );
     setSubmitted(true);
-    onSubmit(isCorrect, userAnswer);
+    onSubmit(isCorrect, userAnswer, correctAnswer);
   };
 
+  // console.log("userAnswer", userAnswer);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+      {/* Show Hint */}
+      {lesson.youtube && (
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowYoutube((prev) => !prev)}
+            className="text-blue-600 underline mb-2"
+          >
+            {showYoutube ? "Hide Video" : "Show Video"}
+          </button>
+          {showYoutube && (
+            <div className="mt-2">
+              <iframe
+                width="400"
+                height="225"
+                src={`https://www.youtube.com/embed/${lesson.youtube}`}
+                title="YouTube video"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Lesson text */}
       {lesson.text.map((line, idx) => (
-        <p key={idx} className="text-lg font-medium text-gray-800 flex items-center">
+        <p
+          key={idx}
+          className="text-lg font-medium text-gray-800 flex items-center"
+        >
           {idx === 0 && (
             <button
               type="button"
@@ -72,26 +113,37 @@ export default function PictureMCQ({
           >
             {parts.map((part, i) => {
               if (part === "null") {
-            const currentIndex = inputIndex++;
-            return (
-              <input
-                key={`input-${idx}-${i}`}
-                type="text"
-                className="mx-1 sm:mx-2 w-12 sm:w-16 text-center border-b-2 text-base sm:text-lg bg-transparent focus:outline-none border-gray-400"
-                value={userAnswer?.[currentIndex] || ""}
-                onChange={(e) =>
-                  handleInputChange(currentIndex, e.target.value)
-                }
-                disabled={submitted}
-                placeholder="?"
-              />
-            );
+                const currentIndex = inputIndex++;
+                return (
+                  <input
+                    key={`input-${idx}-${i}`}
+                    type="text"
+                    className="mx-1 sm:mx-2 w-12 sm:w-16 text-center border-b-2 text-base sm:text-lg bg-transparent focus:outline-none border-gray-400"
+                    value={userAnswer?.[currentIndex] || ""}
+                    onChange={(e) =>
+                      handleInputChange(currentIndex, e.target.value)
+                    }
+                    disabled={submitted}
+                    placeholder="?"
+                  />
+                );
               }
               return <span key={`part-${idx}-${i}`}>{part}</span>;
             })}
           </p>
         );
       })}
+      {/* Lesson image */}
+      {lesson.image && (
+        <div className="flex justify-left">
+          <img
+            src={lesson.image}
+            alt="Lesson visual"
+            className="w-full max-w-xs sm:max-w-sm rounded-lg shadow-md"
+            onError={(e) => (e.target.src = "https://via.placeholder.com/150")}
+          />
+        </div>
+      )}
 
       {/* Read Options */}
       <div className="flex items-center gap-2">
@@ -125,7 +177,19 @@ export default function PictureMCQ({
               } ${submitted ? "cursor-not-allowed opacity-90" : ""}`}
               disabled={submitted}
             >
-              {option.text}
+              {option.image && (
+                <img
+                  src={option.image}
+                  alt={option.text}
+                  className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-md mb-2"
+                  onError={(e) =>
+                    (e.target.src = "https://via.placeholder.com/100")
+                  }
+                />
+              )}
+              <span className="text-sm sm:text-base font-medium">
+                {option.text}
+              </span>
               {submitted && isSelected && (
                 <span
                   className={`block mt-1 text-sm ${
@@ -144,7 +208,7 @@ export default function PictureMCQ({
       {feedback && !lesson.options.some((opt) => opt.text === userAnswer) && (
         <p
           className={`text-base font-medium mt-2 ${
-            feedback === lesson.feedback.correct
+            feedback === lesson.feedback?.correct
               ? "text-green-600"
               : "text-red-600"
           }`}

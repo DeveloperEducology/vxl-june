@@ -1139,7 +1139,7 @@ const Quiz = () => {
               setUserAnswers({ ...userAnswers, [question._id]: val });
               setFeedback({ ...feedback, [question._id]: "" });
             }}
-            onSubmit={(isCorrect, userInputSummary) => {
+            onSubmit={(isCorrect, userAnswer, correctAnswer) => {
               setAttemptedQuestions((prev) => prev + 1);
               if (isCorrect) {
                 setCorrectAnswers((prev) => prev + 1);
@@ -1147,8 +1147,8 @@ const Quiz = () => {
               const feedbackMessage = isCorrect
                 ? "✅ Correct!"
                 : `❌ Incorrect, the correct answer is ${
-                    question.correctAnswer
-                  }. You entered: ${userInputSummary.join(", ")}`;
+                    correctAnswer
+                  }. You entered: ${userAnswer}`;
               setFeedback({ ...feedback, [question._id]: feedbackMessage });
 
               if (isCorrect) {
@@ -1560,7 +1560,7 @@ const Quiz = () => {
                 "TEST",
                 "SINGLE_SELECT",
                 "picture-addition",
-                // "mcq",
+                "mcq",
                 "table-quiz",
                 "EQUATION",
                 "multi",
