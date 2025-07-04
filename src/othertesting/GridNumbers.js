@@ -94,20 +94,20 @@ return (
             <div className="flex flex-col sm:flex-row sm:justify-center gap-6 sm:gap-8 mb-8 sm:mb-10">
                 {/* Hundreds */}
                 <div className="flex flex-col items-center">
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-3 gap-2">
                         {Array(q.hundreds)
                             .fill()
                             .map((_, hundredIndex) => (
                                 <div
                                     key={hundredIndex}
-                                    className="grid grid-cols-10 gap-1 p-2 border-2 border-blue-300 bg-blue-100 rounded-lg shadow-sm"
+                                    className="grid grid-cols-10 gap-1 border-1 border-blue-300 bg-blue-100 shadow-sm"
                                 >
                                     {Array(100)
                                         .fill()
                                         .map((_, i) => (
                                             <div
                                                 key={i}
-                                                className="bg-blue-400 w-1 h-1 sm:w-4 sm:h-4"
+                                                className="bg-blue-400 w-1 h-1 sm:w-1 sm:h-1"
                                             ></div>
                                         ))}
                                 </div>
@@ -120,13 +120,13 @@ return (
 
                 {/* Tens */}
                 <div className="flex flex-col items-center">
-                    <div className="grid grid-cols-2 gap-2 p-3 border-2 border-green-300 bg-green-100 rounded-lg shadow-sm">
-                        {Array(q.tens)
+                    <div className={`grid grid-cols-${q.tens} gap-1 p-1 border-2 border-green-300 bg-green-100 shadow-sm`}>
+                        {Array(q.tens * 10)
                             .fill()
                             .map((_, i) => (
                                 <div
                                     key={i}
-                                    className="bg-green-400 w-6 h-10 sm:w-8 sm:h-12 rounded-md"
+                                    className="bg-green-400 w-1 h-1 sm:w-2 sm:h-2"
                                 ></div>
                             ))}
                     </div>
@@ -137,13 +137,13 @@ return (
 
                 {/* Ones */}
                 <div className="flex flex-col items-center">
-                    <div className="grid grid-cols-3 gap-2 p-3 border-2 border-red-300 bg-red-100 rounded-lg shadow-sm">
+                    <div className="grid grid-cols-3 gap-2 p-3 border-2 border-red-300 bg-red-100 shadow-sm">
                         {Array(q.ones)
                             .fill()
                             .map((_, i) => (
                                 <div
                                     key={i}
-                                    className="bg-red-400 w-5 h-5 sm:w-6 sm:h-6 rounded-full"
+                                    className="bg-red-400 w-2 h-2 sm:w-2 sm:h-2"
                                 ></div>
                             ))}
                     </div>
