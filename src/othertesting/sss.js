@@ -10,10 +10,12 @@ export default function PictureMCQ({
   const [feedback, setFeedback] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [showYoutube, setShowYoutube] = useState(false);
+  const [showSolution, setShowSolution] = useState(false);
 
   useEffect(() => {
     setFeedback("");
     setSubmitted(false);
+    setShowSolution(false); // Reset showSolution when lesson changes
   }, [lesson]);
 
   const readAloud = (text) => {
@@ -37,22 +39,21 @@ export default function PictureMCQ({
   const handleSubmit = () => {
     const selected = lesson.options.find((opt) => opt.text === userAnswer);
     const isCorrect = selected?.isCorrect;
-    // Find the correct answer(s)
     const correctOption = lesson.options.find((opt) => opt.isCorrect);
     const correctAnswer = correctOption ? correctOption.text : null;
 
     setFeedback(
       isCorrect
-        ? lesson.feedback?.correct
-        : `${lesson.feedback?.incorrect}${
+        ? lesson.feedback?.correct || "Correct!"
+        : `${lesson.feedback?.incorrect || "Incorrect."}${
             correctAnswer ? ` (Correct: ${correctAnswer})` : ""
           }`
     );
     setSubmitted(true);
+    setShowSolution(true); // Show solution after submission, regardless of correctness
+    setShowYoutube(false);
     onSubmit(isCorrect, userAnswer, correctAnswer);
   };
-
-  // console.log("userAnswer", userAnswer);
 
   return (
     <div className="space-y-5">
@@ -133,6 +134,7 @@ export default function PictureMCQ({
           </p>
         );
       })}
+
       {/* Lesson image */}
       {lesson.image && (
         <div className="flex justify-left">
@@ -172,8 +174,8 @@ export default function PictureMCQ({
               onClick={() => !submitted && handleSelectMCQ(option.text)}
               className={`px-4 py-2 rounded-md min-w-[140px] text-sm border text-center transition-all duration-200 ${
                 isSelected
-                  ? "bg-indigo-600 text-white"
-                  : "bg-white border-gray-300 text-gray-800 hover:bg-indigo-100"
+                  ? "bg-blue-400 text-white"
+                  : "bg-white border-blue-300 text-gray-800 hover:bg-indigo-100"
               } ${submitted ? "cursor-not-allowed opacity-90" : ""}`}
               disabled={submitted}
             >
@@ -205,16 +207,46 @@ export default function PictureMCQ({
       </div>
 
       {/* Final Feedback */}
-      {feedback && !lesson.options.some((opt) => opt.text === userAnswer) && (
+      {feedback && (
         <p
           className={`text-base font-medium mt-2 ${
-            feedback === lesson.feedback?.correct
-              ? "text-green-600"
-              : "text-red-600"
+            feedback.includes("Correct") ? "text-green-600" : "text-red-600"
           }`}
         >
           {feedback}
         </p>
+      )}
+
+      {/* Show Solution */}
+      {submitted && lesson.solutionKey && showSolution && (
+        <div className="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+          <div className="font-semibold text-yellow-800 mb-2">Solution:</div>
+          <p className="text-sm text-gray-700">
+            {lesson.solutionKey.formula || "No formula provided."}
+          </p>
+          {lesson.solutionKey.steps?.length > 0 ? (
+            <ol className="list-decimal pl-5 mt-2">
+              {lesson.solutionKey.steps.map((step, index) => (
+                <li key={index} className="text-sm text-gray-700 mb-1">
+                  {step}
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="text-sm text-gray-700">No steps provided.</p>
+          )}
+        </div>
+      )}
+
+      {/* Optional: Toggle Solution Button */}
+      {submitted && lesson.solutionKey && (
+        <button
+          type="button"
+          onClick={() => setShowSolution((prev) => !prev)}
+          className="text-blue-600 underline mt-2"
+        >
+          {showSolution ? "Hide Solution" : "Show Solution"}
+        </button>
       )}
 
       {/* Action buttons */}

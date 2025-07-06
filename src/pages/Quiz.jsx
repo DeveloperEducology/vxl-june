@@ -12,6 +12,10 @@ import PictureAdditionQuiz from "./PictureAdditionQuiz";
 import SingleMathQuizTest from "./SingleMathQuizTest";
 import MultiSelect from "./MultiSelect";
 import PictureMCQ from "../othertesting/sss";
+import SolutionBox from "../components/Solutionbox";
+import Multiplication from "../components/Multiplication";
+import Addition from "../components/Addition";
+import Subtraction from "../components/Subtraction";
 
 const Quiz = () => {
   const navigate = useNavigate();
@@ -26,6 +30,7 @@ const Quiz = () => {
   const [error, setError] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [loadingImage] = useState(UploadingAnimation);
+  const [showSolution, setShowSolution] = useState(false);
 
   // Timer state
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -458,8 +463,19 @@ const Quiz = () => {
     }
   };
 
+  // console.log("question", question);
+
   const renderQuestion = () => {
     switch (question?.type) {
+      case "multiply":
+        return <Multiplication lesson={question} />;
+
+      case "addition":
+        return <Addition lesson={question} />;
+
+      case "subtraction":
+        return <Subtraction lesson={question} />;
+
       case "SINGLE_SELECT":
         return (
           <SingleSelect
@@ -1077,7 +1093,6 @@ const Quiz = () => {
           </>
         );
 
-    
       case "picture-addition":
         return (
           <PictureAdditionQuiz
@@ -1133,6 +1148,7 @@ const Quiz = () => {
             onNext={() => {
               if (currentQuestionIndex < questions.length - 1) {
                 setCurrentQuestionIndex(currentQuestionIndex + 1);
+                setShowSolution(false);
               }
             }}
             setUserAnswer={(val) => {
@@ -1146,9 +1162,7 @@ const Quiz = () => {
               }
               const feedbackMessage = isCorrect
                 ? "✅ Correct!"
-                : `❌ Incorrect, the correct answer is ${
-                    correctAnswer
-                  }. You entered: ${userAnswer}`;
+                : `❌ Incorrect, the correct answer is ${correctAnswer}. You entered: ${userAnswer}`;
               setFeedback({ ...feedback, [question._id]: feedbackMessage });
 
               if (isCorrect) {
@@ -1162,6 +1176,9 @@ const Quiz = () => {
                       [questions[currentQuestionIndex + 1]?._id]: "",
                     });
                   } else {
+                    if (!isCorrect) {
+                      <SolutionBox solutionKey={question.solutionKey} />;
+                    }
                     setFeedback({
                       ...feedback,
                       [question._id]: "✅ Correct! Quiz completed!",
@@ -1547,7 +1564,9 @@ const Quiz = () => {
           }
         }
       `}</style>
-      <p style={{ fontSize: "10px", marginBottom: "8px" }}>{lessonName } - {question?.type} </p>
+      <p style={{ fontSize: "10px", marginBottom: "8px" }}>
+        {lessonName} - {question?.type}{" "}
+      </p>
       <div className="quiz-container">
         <div className="justify-left items-left">
           {showQuestion ? renderQuestion() : null}
@@ -1563,7 +1582,10 @@ const Quiz = () => {
                 "mcq",
                 "table-quiz",
                 "EQUATION",
+                "subtraction",
                 "multi",
+                "addition",
+                "multiply",
               ].includes(question?.type) && (
                 <div className="flex gap-10 mt-6">
                   <button
@@ -1613,24 +1635,27 @@ const Quiz = () => {
               )}
           </div>
         </div>
-        <div className="quiz-sidebar">
-          <div className="progress-row">
-            <div>
-              <div className="sidebar-label">Questions</div>
-              <div className="sidebar-value">
-                {currentQuestionIndex + 1}/{questions.length}
+        {
+          !["addition", "multiply", "subtraction"].includes(question?.type) && (
+            <div className="quiz-sidebar">
+              <div className="progress-row">
+                <div>
+                  <div className="sidebar-label">Questions</div>
+                  <div className="sidebar-value">
+                    {currentQuestionIndex + 1}/{questions.length}
+                  </div>
+                </div>
+                <div>
+                  <div className="sidebar-label">Time Elapsed</div>
+                  <div className="sidebar-value">{formatTime(elapsedTime)}</div>
+                </div>
+                <div>
+                  <div className="sidebar-label">Smart Score</div>
+                  <div className="sidebar-value">{smartScore}</div>
+                </div>
               </div>
             </div>
-            <div>
-              <div className="sidebar-label">Time Elapsed</div>
-              <div className="sidebar-value">{formatTime(elapsedTime)}</div>
-            </div>
-            <div>
-              <div className="sidebar-label">Smart Score</div>
-              <div className="sidebar-value">{smartScore}</div>
-            </div>
-          </div>
-        </div>
+          )}
       </div>
     </div>
   );
