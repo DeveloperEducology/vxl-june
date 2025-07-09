@@ -11,12 +11,25 @@ export default function PictureMCQ({
   const [submitted, setSubmitted] = useState(false);
   const [showYoutube, setShowYoutube] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
+  const [shuffledOptions, setShuffledOptions] = useState([]);
 
-  useEffect(() => {
-    setFeedback("");
-    setSubmitted(false);
-    setShowSolution(false); // Reset showSolution when lesson changes
-  }, [lesson]);
+  const shuffleArray = (array) => {
+  return array
+    .map((value) => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+};
+
+
+ useEffect(() => {
+  setFeedback("");
+  setSubmitted(false);
+  setShowSolution(false);
+  if (lesson?.options) {
+    setShuffledOptions(shuffleArray(lesson.options));
+  }
+}, [lesson]);
+
 
   const readAloud = (text) => {
     if ("speechSynthesis" in window) {
@@ -110,7 +123,7 @@ export default function PictureMCQ({
         return (
           <p
             key={`prompt-${idx}`}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-green-800 border border-green-400 p-2 rounded flex flex-wrap items-center"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-green-800 p-2 rounded flex flex-wrap items-center"
           >
             {parts.map((part, i) => {
               if (part === "null") {
@@ -164,7 +177,7 @@ export default function PictureMCQ({
 
       {/* Options as buttons */}
       <div className="flex flex-wrap gap-4 mt-4">
-        {lesson.options.map((option, idx) => {
+        {shuffledOptions.map((option, idx) => {
           const isSelected = userAnswer === option.text;
           const isCorrect = option.isCorrect;
 
