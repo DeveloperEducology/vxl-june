@@ -11,6 +11,8 @@ import Ordering from "./othertesting/Ordering";
 import TesingQuiz from "./othertesting/TestingQuix";
 import WordGame from "./othertesting/WordGame";
 import GridExerciseQuiz from "./othertesting/GridNumbers";
+import PrefixQuiz from "./components/PrefixQuiz";
+import Eq from "./othertesting/Eq";
 
 
 function App() {
@@ -18,6 +20,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/wordgame" element={<WordGame />} />
+      <Route path="/eq" element={<Eq />} />
       <Route path="/grid" element={<GridExerciseQuiz />} />
       <Route path="/home" element={<Home />} />
       <Route path="/tt" element={<TesingQuiz />} />

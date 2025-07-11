@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 
 export default function Addition({ lesson = {} }) {
   const [question, setQuestion] = useState(null);
   const [number1, setNumber1] = useState(null);
   const [number2, setNumber2] = useState(null);
   const [userAnswer, setUserAnswer] = useState("");
+  const [correctAnswer, setCorrectAnswer] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedback, setFeedback] = useState("");
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [isKeypadVisible, setIsKeypadVisible] = useState(false);
+
 
   const getRandomFromRange = (range) => {
     if (Array.isArray(range) && range.length === 2) {
@@ -30,6 +32,7 @@ export default function Addition({ lesson = {} }) {
       getRandomFromRange(bRange) ?? Math.floor(Math.random() * 12) + 1;
     setNumber2(num2);
     const correctAnswer = num1 + num2;
+
 
     let options = new Set();
     while (options.size < 3) {

@@ -16,6 +16,8 @@ import SolutionBox from "../components/Solutionbox";
 import Multiplication from "../components/Multiplication";
 import Addition from "../components/Addition";
 import Subtraction from "../components/Subtraction";
+import EquationMCQ from "../othertesting/EquationMCQ";
+import EquationRenderer from "../othertesting/EquationRenderer";
 
 const Quiz = () => {
   const navigate = useNavigate();
@@ -462,8 +464,40 @@ const Quiz = () => {
       }, 1500);
     }
   };
+  const transformPieces = (pieces) =>
+    pieces
+      .map((piece) => {
+        if (piece.objectType === "PlainText") {
+          return { renderAs: "text", text: piece.text };
+        } else if (
+          piece.objectType === "QMEquation" ||
+          piece.objectType === "QMAlgebraic" ||
+          piece.objectType === "QMExponent"
+        ) {
+          return { renderAs: "math", text: piece.latex };
+        } else if (piece.objectType === "QMInput") {
+          return {
+            renderAs: "input",
+            id: piece.id,
+            correctAnswer: piece.correctAnswer,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
 
-  // console.log("question", question);
+  // console.log("current question", question);
+
+  const [userAnswer, setUserAnswer] = useState("");
+
+  const handleOnSubmit = (isCorrect, answer, correctAnswer) => {
+    console.log("Submitted:", { isCorrect, answer, correctAnswer });
+  };
+
+  const handleOnNext = () => {
+    setAttemptedQuestions((prev) => prev + 1);
+    setUserAnswer(""); // Reset answer
+  };
 
   const renderQuestion = () => {
     switch (question?.type) {
@@ -813,16 +847,30 @@ const Quiz = () => {
             {question.imageUrl?.length > 0 && (
               <div className="flex flex-wrap justify-start gap-4 mb-6">
                 {question.imageUrl.map((img, index) => (
-                  <img
+                  <div
                     key={index}
-                    src={img}
-                    alt={`Question ${currentQuestionIndex + 1} image ${
-                      index + 1
-                    }`}
-                    style={
-                      question.style || { maxWidth: "100%", height: "auto" }
-                    }
-                  />
+                    className="flex items-center rounded"
+                    style={{
+                      border: "1px solid #22c55e", // green-500 border
+                      display: "inline-flex",
+                      padding: "2px",
+                      background: "#f0fdf4", // light green bg
+                    }}
+                  >
+                    <img
+                      src={img}
+                      alt={`Question ${currentQuestionIndex + 1} image ${
+                        index + 1
+                      }`}
+                      style={{
+                        maxWidth: "130px", // increased maxWidth for big screens
+                        height: "auto",
+                        display: "block",
+                        border: "none",
+                      }}
+                      className="quiz-img"
+                    />
+                  </div>
                 ))}
               </div>
             )}
@@ -833,6 +881,23 @@ const Quiz = () => {
               placeholder="Your answer"
               className="p-2 border border-gray-300 rounded w-52 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
+            <style jsx>{`
+              .quiz-img {
+                max-width: 320px;
+                height: auto;
+              }
+              @media (max-width: 1024px) {
+                .quiz-img {
+                  max-width: 220px;
+                }
+              }
+              @media (max-width: 640px) {
+                .quiz-img {
+                  max-width: 120px;
+                  height: auto;
+                }
+              }
+            `}</style>
           </div>
         );
 
@@ -1189,6 +1254,17 @@ const Quiz = () => {
             }}
           />
         );
+      case "eq-mcq":
+        return (
+          <EquationMCQ
+            lesson={question}
+            userAnswer={userAnswer}
+            setUserAnswer={setUserAnswer}
+            showSolution={showSolution}
+            onSubmit={handleOnSubmit}
+            onNext={goToNextQuestion}
+          />
+        );
 
       case "table-quiz":
         if (
@@ -1445,6 +1521,8 @@ const Quiz = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setShowQuestion(true);
+      setUserAnswer(null)
+      
     }
   };
 
@@ -1576,10 +1654,11 @@ const Quiz = () => {
               ![
                 "english",
                 "num-sort",
-                "TEST",
+                // "TEST",
                 "SINGLE_SELECT",
                 "picture-addition",
                 "mcq",
+                "eq-mcq",
                 "table-quiz",
                 "EQUATION",
                 "subtraction",
@@ -1635,27 +1714,26 @@ const Quiz = () => {
               )}
           </div>
         </div>
-        {
-          !["addition", "multiply", "subtraction"].includes(question?.type) && (
-            <div className="quiz-sidebar">
-              <div className="progress-row">
-                <div>
-                  <div className="sidebar-label">Questions</div>
-                  <div className="sidebar-value">
-                    {currentQuestionIndex + 1}/{questions.length}
-                  </div>
-                </div>
-                <div>
-                  <div className="sidebar-label">Time Elapsed</div>
-                  <div className="sidebar-value">{formatTime(elapsedTime)}</div>
-                </div>
-                <div>
-                  <div className="sidebar-label">Smart Score</div>
-                  <div className="sidebar-value">{smartScore}</div>
+        {!["addition", "multiply", "subtraction"].includes(question?.type) && (
+          <div className="quiz-sidebar">
+            <div className="progress-row">
+              <div>
+                <div className="sidebar-label">Questions</div>
+                <div className="sidebar-value">
+                  {currentQuestionIndex + 1}/{questions.length}
                 </div>
               </div>
+              <div>
+                <div className="sidebar-label">Time Elapsed</div>
+                <div className="sidebar-value">{formatTime(elapsedTime)}</div>
+              </div>
+              <div>
+                <div className="sidebar-label">Smart Score</div>
+                <div className="sidebar-value">{smartScore}</div>
+              </div>
             </div>
-          )}
+          </div>
+        )}
       </div>
     </div>
   );

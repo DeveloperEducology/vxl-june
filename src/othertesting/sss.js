@@ -14,22 +14,20 @@ export default function PictureMCQ({
   const [shuffledOptions, setShuffledOptions] = useState([]);
 
   const shuffleArray = (array) => {
-  return array
-    .map((value) => ({ value, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ value }) => value);
-};
+    return array
+      .map((value) => ({ value, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ value }) => value);
+  };
 
-
- useEffect(() => {
-  setFeedback("");
-  setSubmitted(false);
-  setShowSolution(false);
-  if (lesson?.options) {
-    setShuffledOptions(shuffleArray(lesson.options));
-  }
-}, [lesson]);
-
+  useEffect(() => {
+    setFeedback("");
+    setSubmitted(false);
+    setShowSolution(false);
+    if (lesson?.options) {
+      setShuffledOptions(shuffleArray(lesson.options));
+    }
+  }, [lesson]);
 
   const readAloud = (text) => {
     if ("speechSynthesis" in window) {

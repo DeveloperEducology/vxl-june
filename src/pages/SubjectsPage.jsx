@@ -32,14 +32,10 @@ SubjectButton.propTypes = {
 
 // Subject details component
 const SubjectDetails = ({ subject, onNavigate }) => {
-  // Create map of chapters { chapterId: { name, lessons: [] } }
   const chapterMap = {};
-
   subject.chapterIds.forEach((chap) => {
     chapterMap[chap._id] = { name: chap.name, lessons: [] };
   });
-
-  // Assign lessons to their respective chapters
   subject.lessonIds.forEach((lesson) => {
     if (chapterMap[lesson.chapterId]) {
       chapterMap[lesson.chapterId].lessons.push({
@@ -66,12 +62,12 @@ const SubjectDetails = ({ subject, onNavigate }) => {
       </p>
 
       {/* Chapter List - Vertical Accordion Style */}
-      <div className="space-y-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="space-y-6 grid grid-cols-1 md:grid-cols-2 gap-6">
         {chapterEntries.map(([id, chapter], chapterIndex) =>
           chapter.lessons.length > 0 ? (
             <div
               key={id}
-              className="border border-gray-200 rounded-lg overflow-hidden"
+              className="border border-gray-200 rounded-lg overflow-hidden h-auto"
             >
               {/* Chapter Title */}
               <h3 className="bg-gray-50 px-4 py-3 font-semibold text-gray-800">
