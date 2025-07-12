@@ -143,7 +143,7 @@ const Quiz = () => {
       } finally {
         setTimeout(() => {
           setLoading(false);
-        }, 2000);
+        }, 500);
       }
     };
 
@@ -1521,8 +1521,7 @@ const Quiz = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setShowQuestion(true);
-      setUserAnswer(null)
-      
+      setUserAnswer(null);
     }
   };
 
