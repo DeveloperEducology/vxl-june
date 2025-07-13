@@ -18,6 +18,7 @@ import Addition from "../components/Addition";
 import Subtraction from "../components/Subtraction";
 import EquationMCQ from "../othertesting/EquationMCQ";
 import EquationRenderer from "../othertesting/EquationRenderer";
+import PhoneticQuiz from "../components/PhoneticQuiz";
 
 const Quiz = () => {
   const navigate = useNavigate();
@@ -509,6 +510,13 @@ const Quiz = () => {
 
       case "subtraction":
         return <Subtraction lesson={question} />;
+
+      case "phonetics":
+        return (
+          <PhoneticQuiz
+            lesson={question}
+          />
+        );
 
       case "SINGLE_SELECT":
         return (
@@ -1654,6 +1662,7 @@ const Quiz = () => {
                 "english",
                 "num-sort",
                 // "TEST",
+                // 'phonetics',
                 "SINGLE_SELECT",
                 "picture-addition",
                 "mcq",
@@ -1666,7 +1675,9 @@ const Quiz = () => {
                 "multiply",
               ].includes(question?.type) && (
                 <div className="flex gap-10 mt-6">
-                  <button
+                  {
+                    question?.type !== "phonetics" && (
+                      <button
                     onClick={checkAnswer}
                     disabled={!allInputsFilled()}
                     className={`
@@ -1682,6 +1693,8 @@ const Quiz = () => {
                   >
                     Submit
                   </button>
+                    )
+                  }
 
                   <button
                     onClick={goToNextQuestion}

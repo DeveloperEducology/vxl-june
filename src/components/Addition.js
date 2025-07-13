@@ -171,7 +171,7 @@ export default function Addition({ lesson = {} }) {
             <input
               ref={tensRef}
               id="input-0"
-              type="number"
+              type="text"
               maxLength={2}
               value={userInput[0]}
               onChange={(e) => handleInputChange(e, 0)}
@@ -186,7 +186,7 @@ export default function Addition({ lesson = {} }) {
             <input
               ref={onesRef}
               id="input-1"
-              type="number"
+              type="text"
               maxLength={1}
               value={userInput[1]}
               onChange={(e) => handleInputChange(e, 1)}

@@ -13,12 +13,19 @@ import WordGame from "./othertesting/WordGame";
 import GridExerciseQuiz from "./othertesting/GridNumbers";
 import PrefixQuiz from "./components/PrefixQuiz";
 import Eq from "./othertesting/Eq";
+import ComparisionSimulation from "./components/ComparisionSimulation";
+import EmojiGuessQuiz from "./components/EmojiGuessQuiz";
+import Phonetics from "./components/Phonetics";
+
 
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/ph" element={<Phonetics />} />
+      <Route path="/emoji" element={<EmojiGuessQuiz />} />
+      <Route path="/comp" element={<ComparisionSimulation />} />
       <Route path="/wordgame" element={<WordGame />} />
       <Route path="/eq" element={<Eq />} />
       <Route path="/grid" element={<GridExerciseQuiz />} />
