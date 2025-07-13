@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { InlineMath, BlockMath } from "react-katex";
 import "katex/dist/katex.min.css";
+import { FiVolume2 } from "react-icons/fi";
 
 // Utility to transform question pieces into renderable parts
 const transformPieces = (pieces) =>
@@ -135,7 +136,7 @@ setShowSolution(true);
                     className="mr-2 text-xl"
                     aria-label="Read aloud"
                   >
-                    🔉
+                    <FiVolume2 size={24} />
                   </button>
                 )}
                 {part.content}
@@ -169,7 +170,7 @@ setShowSolution(true);
               className="text-xl"
               aria-label="Read all options"
             >
-              🔉
+              <FiVolume2 size={24} />
             </button>
             <span className="text-sm text-gray-500">Read all options</span>
           </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { FiVolume2 } from "react-icons/fi";
 
 export default function PictureMCQ({
   lesson,
@@ -107,7 +108,7 @@ export default function PictureMCQ({
               className="mr-2 text-xl"
               aria-label="Read aloud"
             >
-              🔉
+              <FiVolume2 size={24} />
             </button>
           )}
           {line}
@@ -168,7 +169,7 @@ export default function PictureMCQ({
           className="text-xl"
           aria-label="Read all options"
         >
-          🔉
+          <FiVolume2 size={24} />
         </button>
         <span className="text-sm text-gray-500">Read all options</span>
       </div>
