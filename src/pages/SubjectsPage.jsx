@@ -48,12 +48,40 @@ const SubjectDetails = ({ subject, onNavigate }) => {
   const chapterEntries = Object.entries(chapterMap);
   const letterPrefixes = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
+  // Arrange chapters: A & B in column 1, C & D in column 2, E & F in column 1, G & H in column 2, etc.
+  // That is: even-indexed pairs in col 1, odd-indexed pairs in col 2.
+  const col1 = [];
+  const col2 = [];
+  for (let i = 0; i < chapterEntries.length; i += 2) {
+    if ((i / 2) % 2 === 0) {
+      // Even pair: goes to col1
+      col1.push(chapterEntries.slice(i, i + 2));
+    } else {
+      // Odd pair: goes to col2
+      col2.push(chapterEntries.slice(i, i + 2));
+    }
+  }
+
+  // Flatten columns for rendering
+  const flattenChapters = (col) =>
+    col.flat().map(([id, chapter], idx) => ({
+      id,
+      chapter,
+      letter: letterPrefixes[
+        chapterEntries.findIndex(([cid]) => cid === id)
+      ] || "?",
+      chapterIdx: chapterEntries.findIndex(([cid]) => cid === id),
+    }));
+
+  const chaptersCol1 = flattenChapters(col1);
+  const chaptersCol2 = flattenChapters(col2);
+
   return (
-    <section className="mt-6 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-green-600 mb-4">
+    <section className="mt-6 p-6 bg-white rounded-lg shadow-md text-sm">
+      <h2 className="text-xl font-bold text-green-600 mb-4">
         {subject.classId.title} {subject.name}
       </h2>
-      <p className="text-gray-600 mb-6 leading-relaxed">
+      <p className="text-gray-600 mb-6 leading-relaxed text-xs">
         Explore the <strong>{subject.name.toLowerCase()}</strong> skills for{" "}
         {subject.classId.title}. These skills are organized into categories.
         Hover over any skill to preview it, or click to start practicing. Your
@@ -61,39 +89,41 @@ const SubjectDetails = ({ subject, onNavigate }) => {
         improve.
       </p>
 
-      {/* Chapter List - Vertical Accordion Style */}
-      <div className="space-y-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {chapterEntries.map(([id, chapter], chapterIndex) =>
-          chapter.lessons.length > 0 ? (
-            <div
-              key={id}
-              className="border border-gray-200 rounded-lg overflow-hidden h-auto"
-            >
-              {/* Chapter Title */}
-              <h3 className="bg-gray-50 px-4 py-3 font-semibold text-gray-800">
-                {`${letterPrefixes[chapterIndex] || "?"}.`} {chapter.name}
-              </h3>
+      {/* Custom two-column chapter grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[chaptersCol1, chaptersCol2].map((chapters, colIdx) => (
+          <div key={colIdx} className="flex flex-col gap-6">
+            {chapters.map(({ id, chapter, letter, chapterIdx }) =>
+              chapter.lessons.length > 0 ? (
+                <div
+                  key={id}
+                  className=" rounded-lg overflow-hidden h-auto text-xs mb-0"
+                >
+                  {/* Chapter Title */}
+                  <h3 className="bg-gray-50 px-2 py-3 font-semibold text-gray-800 text-base">
+                    {`${letter}.`} {chapter.name}
+                  </h3>
 
-              {/* Lesson List under this chapter */}
-              <ul className="divide-y divide-gray-200">
-                {chapter.lessons.map((lesson, lessonIndex) => (
-                  <li
-                    key={lesson._id}
-                    className="px-4 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
-                    onClick={() => onNavigate(subject.name, lesson)}
-                  >
-                    <span className="text-green-600 font-medium mr-2">
-                      {`${letterPrefixes[chapterIndex] || "?"}.${
-                        lessonIndex + 1
-                      }`}
-                    </span>
-                    <span className="text-gray-700">{lesson.name}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null
-        )}
+                  {/* Lesson List under this chapter */}
+                  <ul>
+                    {chapter.lessons.map((lesson, lessonIndex) => (
+                      <li
+                        key={lesson._id}
+                        className="px-2 py-1 hover:bg-gray-50 cursor-pointer transition-colors text-xs"
+                        onClick={() => onNavigate(subject.name, lesson)}
+                      >
+                        <span className="text-green-600 font-medium mr-2">
+                          {`${letter}.${lessonIndex + 1}`}
+                        </span>
+                        <span className="text-gray-700">{lesson.name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null
+            )}
+          </div>
+        ))}
       </div>
     </section>
   );

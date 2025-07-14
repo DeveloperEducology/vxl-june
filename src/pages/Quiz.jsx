@@ -512,11 +512,7 @@ const Quiz = () => {
         return <Subtraction lesson={question} />;
 
       case "phonetics":
-        return (
-          <PhoneticQuiz
-            lesson={question}
-          />
-        );
+        return <PhoneticQuiz lesson={question} />;
 
       case "SINGLE_SELECT":
         return (
@@ -564,17 +560,28 @@ const Quiz = () => {
                 incorrect: "Incorrect, please try again.",
               },
             }}
+            questionIndex={currentQuestionIndex}
+            totalQuestions={questions.length}
+            onQuestionSelect={(index) => {
+              setShowQuestion(false);
+              setTimeout(() => {
+                setCurrentQuestionIndex(index);
+                setShowQuestion(true);
+              }, 300); // delay to smooth transition
+            }}
             onNext={(isCorrect) => {
               setAttemptedQuestions((prev) => prev + 1);
               if (isCorrect) {
                 setCorrectAnswers((prev) => prev + 1);
               }
+
               const answer = isCorrect ? "correct" : "incorrect";
               setUserAnswers({ ...userAnswers, [question._id]: answer });
               setFeedback({
                 ...feedback,
                 [question._id]: isCorrect ? "✅ Correct!" : "❌ Incorrect!",
               });
+
               if (isCorrect) {
                 setShowQuestion(false);
                 setTimeout(() => {
@@ -587,6 +594,7 @@ const Quiz = () => {
             }}
           />
         );
+
       case "EQUATION":
         return (
           // <SingleMathQuiz
@@ -1533,6 +1541,17 @@ const Quiz = () => {
     }
   };
 
+  const [selected, setSelected] = useState([]);
+  // const [showDropdown, setShowDropdown] = useState(false);
+
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const handleQuestionSelect = (index) => {
+    setShowDropdown(false);
+    setCurrentQuestionIndex(index);
+    setShowQuestion(true);
+    setFeedback({}); // optional: clear feedback when navigating
+  };
   // Calculate Smart Score as a percentage
   const smartScore =
     attemptedQuestions > 0
@@ -1651,7 +1670,69 @@ const Quiz = () => {
       `}</style>
       <p style={{ fontSize: "10px", marginBottom: "8px" }}>
         {lessonName} - {question?.type}{" "}
-      </p>
+      </p>{" "}
+      {/* Question Number Dropdown */}
+      <div style={{ marginBottom: 16, position: "relative" }}>
+        <button
+          className="question-number-btn"
+          onClick={() => setShowDropdown((prev) => !prev)}
+          style={{
+            padding: "2px 6px",
+            borderRadius: 6,
+            border: "1px solid #ccc",
+            background: "#f0f0f0",
+            cursor: "pointer",
+            // fontWeight: "bold",
+          }}
+        >
+          Q. {currentQuestionIndex + 1} of {questions.length}
+        </button>
+        {showDropdown && (
+          <div
+            className="question-dropdown"
+            style={{
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              marginTop: 4,
+              background: "#fff",
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              padding: 8,
+              zIndex: 1000,
+              boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+              maxHeight: "250px",
+              overflowY: "auto",
+              width: "300px", // Optional: control total width
+            }}
+          >
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)", // 4 equal-width columns
+                gap: "4px",
+              }}
+            >
+              {questions.map((_, i) => (
+                <div
+                  key={i}
+                  onClick={() => handleQuestionSelect(i)}
+                  style={{
+                    padding: "6px 8px",
+                    cursor: "pointer",
+                    textAlign: "center",
+                    background:
+                      i === currentQuestionIndex ? "#e0f7ff" : "transparent",
+                    borderRadius: 4,
+                  }}
+                >
+                  {i + 1}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
       <div className="quiz-container">
         <div className="justify-left items-left">
           {showQuestion ? renderQuestion() : null}
@@ -1675,12 +1756,11 @@ const Quiz = () => {
                 "multiply",
               ].includes(question?.type) && (
                 <div className="flex gap-10 mt-6">
-                  {
-                    question?.type !== "phonetics" && (
-                      <button
-                    onClick={checkAnswer}
-                    disabled={!allInputsFilled()}
-                    className={`
+                  {question?.type !== "phonetics" && (
+                    <button
+                      onClick={checkAnswer}
+                      disabled={!allInputsFilled()}
+                      className={`
                           mt-4 px-6 py-2 rounded text-white font-semibold transition
                           ${
                             allInputsFilled()
@@ -1688,13 +1768,12 @@ const Quiz = () => {
                               : "bg-gray-400 cursor-not-allowed"
                           }
                         `}
-                    aria-label="Submit answer"
-                    type="button"
-                  >
-                    Submit
-                  </button>
-                    )
-                  }
+                      aria-label="Submit answer"
+                      type="button"
+                    >
+                      Submit
+                    </button>
+                  )}
 
                   <button
                     onClick={goToNextQuestion}
