@@ -130,6 +130,11 @@ const NumSortingComponent = ({ question, onAnswer, onReset }) => {
       <motion.div
         key={index}
         data-index={index}
+        layout= "size" // <-- enables automatic animation on position change
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
         draggable={!isSubmitted}
         onDragStart={(e) => !isSubmitted && handleDragStart(e, index)}
         onDragEnd={handleDragEnd}
@@ -139,7 +144,13 @@ const NumSortingComponent = ({ question, onAnswer, onReset }) => {
         onTouchStart={(e) => !isSubmitted && handleTouchStart(e, index)}
         className={baseStyles}
         style={{
-          backgroundColor: isWord ? "#4B5EAA" : "#2D6A4F",
+          backgroundColor: isWord
+            ? draggedIndex === index
+              ? "#374151"
+              : ""
+            : draggedIndex === index
+            ? ""
+            : "#2D6A4F",
           color: "white",
           minWidth: isWord ? "80px" : "60px",
           textAlign: "center",

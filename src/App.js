@@ -16,14 +16,21 @@ import Eq from "./othertesting/Eq";
 import ComparisionSimulation from "./components/ComparisionSimulation";
 import EmojiGuessQuiz from "./components/EmojiGuessQuiz";
 import Phonetics from "./components/Phonetics";
+import FormObj from "./components/FormObj";
+import WordPhonetics from "./components/WordPhonetics";
+import SortingWords from "./othertesting/SortingWords";
+import MatchingQuiz from "./pages/MatchingComponent";
 
 
 
 function App() {
   return (
+    
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/ph" element={<Phonetics />} />
+      <Route path="/mq" element={<MatchingQuiz />} />
+      <Route path="/form" element={<FormObj />} />
       <Route path="/emoji" element={<EmojiGuessQuiz />} />
       <Route path="/comp" element={<ComparisionSimulation />} />
       <Route path="/wordgame" element={<WordGame />} />

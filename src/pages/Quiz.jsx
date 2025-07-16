@@ -19,6 +19,7 @@ import Subtraction from "../components/Subtraction";
 import EquationMCQ from "../othertesting/EquationMCQ";
 import EquationRenderer from "../othertesting/EquationRenderer";
 import PhoneticQuiz from "../components/PhoneticQuiz";
+import MatchingQuiz from "./MatchingQuiz";
 
 const Quiz = () => {
   const navigate = useNavigate();
@@ -513,6 +514,17 @@ const Quiz = () => {
 
       case "phonetics":
         return <PhoneticQuiz lesson={question} />;
+
+      case "matching":
+        return (
+          <MatchingQuiz
+            instruction={question.instruction}
+            hint={question.hint}
+            leftColumn={question.leftColumn || []}
+            rightColumn={question.rightColumn || []}
+            onAnswer={(isCorrect) => console.log("Quiz result:", isCorrect)}
+          />
+        );
 
       case "SINGLE_SELECT":
         return (
