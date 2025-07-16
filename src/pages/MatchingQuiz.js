@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { GiPlayButton } from "react-icons/gi";
 
 const MatchingQuiz = ({
   instruction,
@@ -15,18 +16,15 @@ const MatchingQuiz = ({
   const [showHint, setShowHint] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
-
-
   // ✅ Speech function
-const readAloud = (text) => {
-  if ("speechSynthesis" in window) {
-    window.speechSynthesis.cancel(); // Stop any ongoing speech
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
-    window.speechSynthesis.speak(utterance);
-  }
-};
-
+  const readAloud = (text) => {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel(); // Stop any ongoing speech
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      window.speechSynthesis.speak(utterance);
+    }
+  };
 
   // Reset when props change
   useEffect(() => {
@@ -82,27 +80,24 @@ const readAloud = (text) => {
     setFeedback(null);
   };
 
-// ✅ Render content with click-to-speak
-const renderContent = (item) => {
-  if (item?.type === "image") {
+  // ✅ Render content with click-to-speak
+  const renderContent = (item) => {
+    if (item?.type === "image") {
+      return (
+        <img
+          src={item?.content}
+          alt="match"
+          className="w-14 h-14 object-cover rounded cursor-pointer"
+          onClick={() => readAloud("Image")}
+        />
+      );
+    }
     return (
-      <img
-        src={item?.content}
-        alt="match"
-        className="w-14 h-14 object-cover rounded cursor-pointer"
-        onClick={() => readAloud("Image")}
-      />
+      <span className="cursor-pointer" onClick={() => readAloud(item?.content)}>
+        {item?.content}
+      </span>
     );
-  }
-  return (
-    <span
-      className="cursor-pointer"
-      onClick={() => readAloud(item?.content)}
-    >
-      {item?.content}
-    </span>
-  );
-};
+  };
   return (
     <div className="p-4 max-w-lg mx-auto">
       {/* Instruction */}
@@ -134,43 +129,42 @@ const renderContent = (item) => {
         </>
       )}
 
-{/* Two-column layout */}
-<div className="mt-4 flex flex-col gap-3">
-  {leftColumn.map((leftItem, idx) => {
-    const rightItem = rightItems[idx];
-    return (
-      <div
-        key={leftItem.id}
-        className="grid grid-cols-2 gap-4 items-stretch"
-        style={{ alignItems: "stretch" }}
-      >
-        {/* LEFT ITEM */}
-        <motion.div
-          layout
-          className="flex justify-center items-center p-3 bg-gray-200 rounded min-h-[70px] h-full"
-        >
-          {renderContent(leftItem)}
-        </motion.div>
+      {/* Two-column layout */}
+      <div className="mt-4 flex flex-col gap-3">
+        {leftColumn.map((leftItem, idx) => {
+          const rightItem = rightItems[idx];
+          return (
+            <div
+              key={leftItem.id}
+              className="grid grid-cols-2 gap-4 items-stretch"
+              style={{ alignItems: "stretch" }}
+            >
+              {/* LEFT ITEM */}
+              <button
+                layout
+                className="flex justify-center items-center p-3 bg-gray-200 rounded min-h-[70px] h-full"
+              >
+                {renderContent(leftItem)}
+              </button>
 
-        {/* RIGHT ITEM (draggable) */}
-        <motion.div
-          key={rightItem?.id}
-          layout
-          draggable={!isSubmitted}
-          onDragStart={(e) => handleDragStart(e, idx)}
-          onDragOver={(e) => handleDragOver(e, idx)}
-          onDrop={(e) => handleDrop(e, idx)}
-          className={`flex justify-center items-center p-4 rounded-lg h-full min-h-[70px] bg-gradient-to-r from-green-500 to-green-600 text-white text-center shadow-md cursor-move select-none transition-all transform hover:scale-105 hover:shadow-lg ${
-            draggedIndex === idx ? "opacity-50" : ""
-          } ${hoverIndex === idx ? "ring-4 ring-yellow-400" : ""}`}
-        >
-          {renderContent(rightItem)}
-        </motion.div>
+              {/* RIGHT ITEM (draggable) */}
+              <button
+                key={rightItem?.id}
+                layout
+                draggable={!isSubmitted}
+                onDragStart={(e) => handleDragStart(e, idx)}
+                onDragOver={(e) => handleDragOver(e, idx)}
+                onDrop={(e) => handleDrop(e, idx)}
+                className={`flex justify-center items-center p-4 rounded-lg h-full min-h-[70px] bg-gradient-to-r from-green-500 to-green-600 text-white text-center shadow-md cursor-move select-none transition-all transform hover:scale-105 hover:shadow-lg ${
+                  draggedIndex === idx ? "opacity-50" : ""
+                } ${hoverIndex === idx ? "ring-4 ring-yellow-400" : ""}`}
+              >
+                {renderContent(rightItem)}
+              </button>
+            </div>
+          );
+        })}
       </div>
-    );
-  })}
-</div>
-
 
       {/* Feedback */}
       {feedback && (
