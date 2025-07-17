@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GiPlayButton } from "react-icons/gi";
 
 const MatchingQuiz = ({
   instruction,
@@ -16,21 +15,32 @@ const MatchingQuiz = ({
   const [showHint, setShowHint] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
+  // ✅ For mobile selection modal/dropdown
+  const [selectingIndex, setSelectingIndex] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
   // ✅ Speech function
   const readAloud = (text) => {
     if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel(); // Stop any ongoing speech
+      window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US";
       window.speechSynthesis.speak(utterance);
     }
   };
 
-  // Reset when props change
+  // ✅ Reset when props change
   useEffect(() => {
     setRightItems([...rightColumn]);
     setIsSubmitted(false);
     setFeedback(null);
+
+    // ✅ Resize listener to toggle mobile/desktop behavior
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [leftColumn, rightColumn]);
 
   const handleDragStart = (e, index) => {
@@ -98,6 +108,16 @@ const MatchingQuiz = ({
       </span>
     );
   };
+
+  // ✅ Handle mobile dropdown selection
+  const handleSelectOption = (selectedItem) => {
+    if (selectingIndex === null) return;
+    const updated = [...rightItems];
+    updated[selectingIndex] = selectedItem;
+    setRightItems(updated);
+    setSelectingIndex(null);
+  };
+
   return (
     <div className="p-4 max-w-lg mx-auto">
       {/* Instruction */}
@@ -133,34 +153,41 @@ const MatchingQuiz = ({
       <div className="mt-4 flex flex-col gap-3">
         {leftColumn.map((leftItem, idx) => {
           const rightItem = rightItems[idx];
+
           return (
             <div
               key={leftItem.id}
               className="grid grid-cols-2 gap-4 items-stretch"
-              style={{ alignItems: "stretch" }}
             >
               {/* LEFT ITEM */}
-              <button
-                layout
-                className="flex justify-center items-center p-3 bg-gray-200 rounded min-h-[70px] h-full"
-              >
+              <div className="flex justify-center items-center p-3 bg-gray-200 rounded min-h-[70px]">
                 {renderContent(leftItem)}
-              </button>
+              </div>
 
-              {/* RIGHT ITEM (draggable) */}
-              <button
-                key={rightItem?.id}
-                layout
-                draggable={!isSubmitted}
-                onDragStart={(e) => handleDragStart(e, idx)}
-                onDragOver={(e) => handleDragOver(e, idx)}
-                onDrop={(e) => handleDrop(e, idx)}
-                className={`flex justify-center items-center p-4 rounded-lg h-full min-h-[70px] bg-gradient-to-r from-green-500 to-green-600 text-white text-center shadow-md cursor-move select-none transition-all transform hover:scale-105 hover:shadow-lg ${
-                  draggedIndex === idx ? "opacity-50" : ""
-                } ${hoverIndex === idx ? "ring-4 ring-yellow-400" : ""}`}
-              >
-                {renderContent(rightItem)}
-              </button>
+              {/* RIGHT ITEM */}
+              {isMobile ? (
+                // ✅ MOBILE: Tap to open modal
+                <button
+                  className="flex justify-center items-center p-4 rounded-lg min-h-[70px] bg-green-600 text-white shadow-md"
+                  onClick={() => setSelectingIndex(idx)}
+                  disabled={isSubmitted}
+                >
+                  {rightItem ? renderContent(rightItem) : "Select Match"}
+                </button>
+              ) : (
+                // ✅ DESKTOP: Drag & drop
+                <button
+                  draggable={!isSubmitted}
+                  onDragStart={(e) => handleDragStart(e, idx)}
+                  onDragOver={(e) => handleDragOver(e, idx)}
+                  onDrop={(e) => handleDrop(e, idx)}
+                  className={`flex justify-center items-center p-4 rounded-lg h-full min-h-[70px] bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md cursor-move transition-all hover:scale-105 ${
+                    draggedIndex === idx ? "opacity-50" : ""
+                  } ${hoverIndex === idx ? "ring-4 ring-yellow-400" : ""}`}
+                >
+                  {renderContent(rightItem)}
+                </button>
+              )}
             </div>
           );
         })}
@@ -189,6 +216,32 @@ const MatchingQuiz = ({
           </button>
         )}
       </div>
+
+      {/* ✅ Mobile modal for selecting right item */}
+      {isMobile && selectingIndex !== null && (
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+          <div className="bg-white p-4 rounded-lg max-w-sm w-full">
+            <h3 className="font-bold text-lg mb-2">Select an option</h3>
+            <div className="flex flex-col gap-2">
+              {rightColumn.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleSelectOption(item)}
+                  className="p-3 border rounded hover:bg-gray-100"
+                >
+                  {renderContent(item)}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setSelectingIndex(null)}
+              className="mt-3 w-full text-center text-red-600"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
