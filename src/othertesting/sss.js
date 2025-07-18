@@ -13,6 +13,7 @@ export default function PictureMCQ({
   const [showYoutube, setShowYoutube] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [shuffledOptions, setShuffledOptions] = useState([]);
+  const [selectedMCQIndex, setSelectedMCQIndex] = useState(null); // ✅ Track selected option
 
   const shuffleArray = (array) => {
     return array
@@ -25,6 +26,7 @@ export default function PictureMCQ({
     setFeedback("");
     setSubmitted(false);
     setShowSolution(false);
+    setSelectedMCQIndex(null);
     if (lesson?.options) {
       setShuffledOptions(shuffleArray(lesson.options));
     }
@@ -37,39 +39,58 @@ export default function PictureMCQ({
     }
   };
 
-  const handleInputChange = (index, value) => {
-    const updated = Array.isArray(userAnswer) ? [...userAnswer] : [];
-    updated[index] = value;
-    setUserAnswer(updated);
-  };
-
-  const handleSelectMCQ = (value) => {
-    readAloud(value);
-    setUserAnswer(value);
+  const handleSelectMCQ = (index) => {
+    setSelectedMCQIndex(index);
   };
 
   const handleSubmit = () => {
-    const selected = lesson.options.find((opt) => opt.text === userAnswer);
-    const isCorrect = selected?.isCorrect;
-    const correctOption = lesson.options.find((opt) => opt.isCorrect);
-    const correctAnswer = correctOption ? correctOption.text : null;
+    const selected = shuffledOptions[selectedMCQIndex];
+    const isCorrect = selected?.isCorrect ?? false;
+    const correctOption = shuffledOptions.find((opt) => opt.isCorrect);
 
     setFeedback(
       isCorrect
         ? lesson.feedback?.correct || "Correct!"
-        : `${lesson.feedback?.incorrect || "Incorrect."}${
-            correctAnswer ? ` (Correct: ${correctAnswer})` : ""
+        : `${lesson.feedback?.incorrect || "Incorrect."} ${
+            correctOption ? "(Correct answer highlighted)" : ""
           }`
     );
+
     setSubmitted(true);
-    setShowSolution(true); // Show solution after submission, regardless of correctness
+    setShowSolution(true);
     setShowYoutube(false);
-    onSubmit(isCorrect, userAnswer, correctAnswer);
+
+    // Send selected image + correct image to onSubmit
+    onSubmit(isCorrect, selected?.image, correctOption?.image);
+    setUserAnswer(selected?.image);
+  };
+
+  const getImageSrc = (htmlString) => {
+    const match = htmlString?.match(/src="([^"]+)"/);
+    return match ? match[1] : null;
   };
 
   return (
     <div className="space-y-5">
-      {/* Show Hint */}
+      {/* <div className="flex flex-wrap justify-left mb-4">
+        <img
+          src="https://cdn.jsdelivr.net/gh/DeveloperEducology/assets@main/apple.svg"
+          width="100"
+        ></img>
+        <img
+          src="https://cdn.jsdelivr.net/gh/DeveloperEducology/assets@main/apple.svg"
+          width="100"
+        ></img>
+        <img
+          src="https://cdn.jsdelivr.net/gh/DeveloperEducology/assets@main/apple.svg"
+          width="100"
+        ></img>
+        <img
+          src="https://cdn.jsdelivr.net/gh/DeveloperEducology/assets@main/apple.svg"
+          width="100"
+        ></img>
+      </div> */}
+      {/* Show YouTube Hint */}
       {lesson.youtube && (
         <div>
           <button
@@ -96,7 +117,7 @@ export default function PictureMCQ({
       )}
 
       {/* Lesson text */}
-      {lesson.text.map((line, idx) => (
+      {lesson.text?.map((line, idx) => (
         <p
           key={idx}
           className="text-lg font-medium text-gray-800 flex items-center"
@@ -115,39 +136,7 @@ export default function PictureMCQ({
         </p>
       ))}
 
-      {/* Prompt with inputs */}
-      {lesson.prompt?.map((line, idx) => {
-        let inputIndex = 0;
-        const parts = line.split(/(null)/g);
-        return (
-          <p
-            key={`prompt-${idx}`}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-green-800 p-2 rounded flex flex-wrap items-center"
-          >
-            {parts.map((part, i) => {
-              if (part === "null") {
-                const currentIndex = inputIndex++;
-                return (
-                  <input
-                    key={`input-${idx}-${i}`}
-                    type="text"
-                    className="mx-1 sm:mx-2 w-12 sm:w-16 text-center border-b-2 text-base sm:text-lg bg-transparent focus:outline-none border-gray-400"
-                    value={userAnswer?.[currentIndex] || ""}
-                    onChange={(e) =>
-                      handleInputChange(currentIndex, e.target.value)
-                    }
-                    disabled={submitted}
-                    placeholder="?"
-                  />
-                );
-              }
-              return <span key={`part-${idx}-${i}`}>{part}</span>;
-            })}
-          </p>
-        );
-      })}
-
-      {/* Lesson image */}
+      {/* Lesson image (if any) */}
       {lesson.image && (
         <div className="flex justify-left">
           <img
@@ -159,31 +148,15 @@ export default function PictureMCQ({
         </div>
       )}
 
-      {/* Read Options */}
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() =>
-            readAloud(lesson.options.map((opt) => opt.text).join(". "))
-          }
-          className="text-xl"
-          aria-label="Read all options"
-        >
-          <FiVolume2 size={24} />
-        </button>
-        <span className="text-sm text-gray-500">Read all options</span>
-      </div>
-
-      {/* Options as buttons */}
+      {/* Options as image buttons */}
       <div className="flex flex-wrap gap-4 mt-4">
         {shuffledOptions.map((option, idx) => {
-          const isSelected = userAnswer === option.text;
-          const isCorrect = option.isCorrect;
+          const isSelected = selectedMCQIndex === idx;
 
           return (
             <button
               key={idx}
-              onClick={() => !submitted && handleSelectMCQ(option.text)}
+              onClick={() => !submitted && handleSelectMCQ(idx)}
               className={`px-4 py-2 rounded-md min-w-[140px] text-sm border text-center transition-all duration-200 ${
                 isSelected
                   ? "bg-blue-400 text-white"
@@ -192,22 +165,17 @@ export default function PictureMCQ({
               disabled={submitted}
             >
               {option.image && (
-                <img
-                  src={option.image}
-                  alt={option.text}
-                  className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-md mb-2"
-                  onError={(e) =>
-                    (e.target.src = "https://via.placeholder.com/100")
-                  }
-                />
+                <div
+                  // className="w-24 h-24 mb-2"
+                  dangerouslySetInnerHTML={{ __html: option.image }}
+                ></div>
               )}
-              <span className="text-sm sm:text-base font-medium">
-                {option.text}
-              </span>
+
+              {/* Feedback after submission */}
               {submitted && isSelected && (
                 <span
                   className={`block mt-1 text-sm ${
-                    isCorrect ? "text-green-600" : "text-red-600"
+                    option.isCorrect ? "text-green-600" : "text-red-600"
                   }`}
                 >
                   {feedback}
@@ -217,7 +185,6 @@ export default function PictureMCQ({
           );
         })}
       </div>
-
       {/* Final Feedback */}
       {feedback && (
         <p
@@ -229,7 +196,7 @@ export default function PictureMCQ({
         </p>
       )}
 
-      {/* Show Solution */}
+      {/* Show Solution if provided */}
       {submitted && lesson.solutionKey && showSolution && (
         <div className="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
           <div className="font-semibold text-yellow-800 mb-2">Solution:</div>
@@ -250,7 +217,7 @@ export default function PictureMCQ({
         </div>
       )}
 
-      {/* Optional: Toggle Solution Button */}
+      {/* Optional Toggle Solution Button */}
       {submitted && lesson.solutionKey && (
         <button
           type="button"
@@ -266,9 +233,9 @@ export default function PictureMCQ({
         {!submitted && (
           <button
             onClick={handleSubmit}
-            disabled={!userAnswer}
+            disabled={selectedMCQIndex === null}
             className={`px-6 py-2 rounded text-white font-semibold transition ${
-              !userAnswer
+              selectedMCQIndex === null
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-indigo-600 hover:bg-indigo-700"
             }`}
