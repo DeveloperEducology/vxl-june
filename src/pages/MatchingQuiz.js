@@ -14,22 +14,25 @@ const MatchingQuiz = ({
   const [showHint, setShowHint] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
-  // Touch drag states
+  // Touch drag
   const touchDraggingIndex = useRef(null);
 
   useEffect(() => {
     setRightItems([...rightColumn]);
     setIsSubmitted(false);
     setFeedback(null);
-
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
   }, [leftColumn, rightColumn]);
 
-  // ✅ Desktop Drag Handlers
+  // ✅ Swap helper with animation trigger
+  const swapItems = (sourceIndex, targetIndex) => {
+    const newOrder = [...rightItems];
+    const [moved] = newOrder.splice(sourceIndex, 1);
+    newOrder.splice(targetIndex, 0, moved);
+    setRightItems(newOrder);
+    setDragOverIndex(null);
+  };
+
+  // ✅ Desktop Drag Handlers (MDN)
   const handleDragStart = (e, index) => {
     e.dataTransfer.setData("text/plain", index);
     e.dataTransfer.effectAllowed = "move";
@@ -40,7 +43,6 @@ const MatchingQuiz = ({
   };
   const handleDragOver = (e) => e.preventDefault();
   const handleDragLeave = () => setDragOverIndex(null);
-
   const handleDrop = (e, targetIndex) => {
     e.preventDefault();
     const sourceIndex = parseInt(e.dataTransfer.getData("text/plain"), 10);
@@ -48,27 +50,21 @@ const MatchingQuiz = ({
     swapItems(sourceIndex, targetIndex);
   };
 
-  // ✅ Swap helper
-  const swapItems = (sourceIndex, targetIndex) => {
-    const newOrder = [...rightItems];
-    const [moved] = newOrder.splice(sourceIndex, 1);
-    newOrder.splice(targetIndex, 0, moved);
-    setRightItems(newOrder);
-    setDragOverIndex(null);
-  };
-
   // ✅ Touch Drag Handlers
   const handleTouchStart = (index) => {
     touchDraggingIndex.current = index;
     setDragOverIndex(index);
+
+    // ✅ Disable page scrolling during drag
+    document.body.style.overflow = "hidden";
   };
 
   const handleTouchMove = (e) => {
     const touch = e.touches[0];
-    const element = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (!element) return;
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (!el) return;
 
-    const dropTarget = element.closest("[data-drop-index]");
+    const dropTarget = el.closest("[data-drop-index]");
     if (dropTarget) {
       const idx = parseInt(dropTarget.dataset.dropIndex, 10);
       setDragOverIndex(idx);
@@ -81,6 +77,9 @@ const MatchingQuiz = ({
     }
     touchDraggingIndex.current = null;
     setDragOverIndex(null);
+
+    // ✅ Re-enable scrolling
+    document.body.style.overflow = "";
   };
 
   const checkAnswer = () => {
@@ -161,25 +160,30 @@ const MatchingQuiz = ({
         </>
       )}
 
-      {/* Columns */}
-      <div className="mt-4 flex flex-col gap-3">
+      {/* Two-column Matching Layout */}
+      <motion.div layout className="mt-4 flex flex-col gap-3">
         {leftColumn.map((leftItem, idx) => {
           const rightItem = rightItems[idx];
 
           return (
-            <div
+            <motion.div
+              layout
               key={leftItem.id}
               className="grid grid-cols-2 gap-4 items-stretch"
             >
-              {/* LEFT */}
-              <div className="flex justify-center items-center p-3 bg-gray-200 rounded min-h-[70px]">
+              {/* LEFT COLUMN */}
+              <motion.div
+                layout
+                className="flex justify-center items-center p-3 bg-gray-200 rounded min-h-[70px]"
+              >
                 {renderContent(leftItem)}
-              </div>
+              </motion.div>
 
-              {/* RIGHT */}
-              <div
-                className={`flex justify-center items-center p-4 rounded-lg min-h-[70px] bg-green-500 text-white shadow-md ${
-                  dragOverIndex === idx ? "ring-4 ring-yellow-400" : ""
+              {/* RIGHT COLUMN (Draggable) */}
+              <motion.div
+                layout
+                className={`flex justify-center items-center p-4 rounded-lg min-h-[70px] bg-green-500 text-white shadow-md transition-all ${
+                  dragOverIndex === idx ? "ring-4 ring-yellow-400 scale-105" : ""
                 }`}
                 data-drop-index={idx}
                 draggable={!isSubmitted}
@@ -188,21 +192,27 @@ const MatchingQuiz = ({
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, idx)}
-                // ✅ Touch support
+                // ✅ Mobile Touch Drag
                 onTouchStart={() => handleTouchStart(idx)}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
               >
                 {renderContent(rightItem)}
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Feedback */}
       {feedback && (
-        <div className="mt-4 text-center font-semibold">{feedback}</div>
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 text-center font-semibold"
+        >
+          {feedback}
+        </motion.div>
       )}
 
       {/* Buttons */}
