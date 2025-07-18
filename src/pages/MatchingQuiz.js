@@ -9,13 +9,16 @@ const MatchingQuiz = ({
   onAnswer,
 }) => {
   const [rightItems, setRightItems] = useState([...rightColumn]);
-  const [dragOverIndex, setDragOverIndex] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
-  // Touch drag
-  const touchDraggingIndex = useRef(null);
+  // Dragging state
+  const draggingIndexRef = useRef(null);
+  const draggingItemRef = useRef(null);
+
+  // Ghost preview (mobile)
+  const [ghostPos, setGhostPos] = useState(null);
 
   useEffect(() => {
     setRightItems([...rightColumn]);
@@ -23,63 +26,70 @@ const MatchingQuiz = ({
     setFeedback(null);
   }, [leftColumn, rightColumn]);
 
-  // ✅ Swap helper with animation trigger
-  const swapItems = (sourceIndex, targetIndex) => {
-    const newOrder = [...rightItems];
-    const [moved] = newOrder.splice(sourceIndex, 1);
-    newOrder.splice(targetIndex, 0, moved);
-    setRightItems(newOrder);
-    setDragOverIndex(null);
+  // ✅ Move item from sourceIndex → targetIndex (live reorder)
+  const moveItem = (sourceIndex, targetIndex) => {
+    if (sourceIndex === targetIndex || sourceIndex == null) return;
+    const updated = [...rightItems];
+    const [moved] = updated.splice(sourceIndex, 1);
+    updated.splice(targetIndex, 0, moved);
+    setRightItems(updated);
   };
 
-  // ✅ Desktop Drag Handlers (MDN)
+  // ✅ Desktop Drag Handlers
   const handleDragStart = (e, index) => {
-    e.dataTransfer.setData("text/plain", index);
+    draggingIndexRef.current = index;
+    draggingItemRef.current = rightItems[index];
     e.dataTransfer.effectAllowed = "move";
   };
-  const handleDragEnter = (e, index) => {
+
+  const handleDragEnter = (e, targetIndex) => {
     e.preventDefault();
-    setDragOverIndex(index);
+    // Reorder live
+    if (draggingIndexRef.current !== targetIndex) {
+      moveItem(draggingIndexRef.current, targetIndex);
+      draggingIndexRef.current = targetIndex; // now dragging item sits at new position
+    }
   };
+
   const handleDragOver = (e) => e.preventDefault();
-  const handleDragLeave = () => setDragOverIndex(null);
-  const handleDrop = (e, targetIndex) => {
+
+  const handleDrop = (e) => {
     e.preventDefault();
-    const sourceIndex = parseInt(e.dataTransfer.getData("text/plain"), 10);
-    if (sourceIndex === targetIndex) return;
-    swapItems(sourceIndex, targetIndex);
+    draggingIndexRef.current = null;
+    draggingItemRef.current = null;
   };
 
-  // ✅ Touch Drag Handlers
+  // ✅ Mobile Touch Handlers
   const handleTouchStart = (index) => {
-    touchDraggingIndex.current = index;
-    setDragOverIndex(index);
+    draggingIndexRef.current = index;
+    draggingItemRef.current = rightItems[index];
 
-    // ✅ Disable page scrolling during drag
-    document.body.style.overflow = "hidden";
+    setGhostPos({ x: 0, y: 0 });
+    document.body.style.overflow = "hidden"; // disable scroll
   };
 
   const handleTouchMove = (e) => {
     const touch = e.touches[0];
+    setGhostPos({ x: touch.clientX, y: touch.clientY });
+
     const el = document.elementFromPoint(touch.clientX, touch.clientY);
     if (!el) return;
-
     const dropTarget = el.closest("[data-drop-index]");
     if (dropTarget) {
-      const idx = parseInt(dropTarget.dataset.dropIndex, 10);
-      setDragOverIndex(idx);
+      const targetIndex = parseInt(dropTarget.dataset.dropIndex, 10);
+
+      if (targetIndex !== draggingIndexRef.current) {
+        moveItem(draggingIndexRef.current, targetIndex);
+        draggingIndexRef.current = targetIndex;
+      }
     }
   };
 
   const handleTouchEnd = () => {
-    if (touchDraggingIndex.current !== null && dragOverIndex !== null) {
-      swapItems(touchDraggingIndex.current, dragOverIndex);
-    }
-    touchDraggingIndex.current = null;
-    setDragOverIndex(null);
-
-    // ✅ Re-enable scrolling
-    document.body.style.overflow = "";
+    draggingIndexRef.current = null;
+    draggingItemRef.current = null;
+    setGhostPos(null);
+    document.body.style.overflow = ""; // re-enable scroll
   };
 
   const checkAnswer = () => {
@@ -132,7 +142,7 @@ const MatchingQuiz = ({
   };
 
   return (
-    <div className="p-4 max-w-lg mx-auto select-none">
+    <div className="p-4 max-w-lg mx-auto select-none relative">
       {/* Instruction */}
       <h2 className="text-lg font-semibold mb-2">{instruction}</h2>
 
@@ -179,20 +189,17 @@ const MatchingQuiz = ({
                 {renderContent(leftItem)}
               </motion.div>
 
-              {/* RIGHT COLUMN (Draggable) */}
+              {/* RIGHT COLUMN (Draggable / Live reorder) */}
               <motion.div
                 layout
-                className={`flex justify-center items-center p-4 rounded-lg min-h-[70px] bg-green-500 text-white shadow-md transition-all ${
-                  dragOverIndex === idx ? "ring-4 ring-yellow-400 scale-105" : ""
-                }`}
+                className={`flex justify-center items-center p-4 rounded-lg min-h-[70px] bg-green-500 text-white shadow-md transition-all`}
                 data-drop-index={idx}
                 draggable={!isSubmitted}
                 onDragStart={(e) => handleDragStart(e, idx)}
                 onDragEnter={(e) => handleDragEnter(e, idx)}
                 onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, idx)}
-                // ✅ Mobile Touch Drag
+                onDrop={handleDrop}
+                // Mobile Touch Live reorder
                 onTouchStart={() => handleTouchStart(idx)}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -233,6 +240,32 @@ const MatchingQuiz = ({
           </button>
         )}
       </div>
+
+      {/* ✅ Mobile Ghost Preview */}
+      <AnimatePresence>
+        {ghostPos && draggingItemRef.current && (
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0.5 }}
+            animate={{
+              x: ghostPos.x,
+              y: ghostPos.y,
+              scale: 1,
+              opacity: 0.9,
+              transition: { type: "spring", stiffness: 200, damping: 20 },
+            }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            className="fixed top-0 left-0 z-50 pointer-events-none"
+            style={{
+              translateX: "-50%",
+              translateY: "-50%",
+            }}
+          >
+            <div className="p-4 bg-green-600 text-white rounded-lg shadow-lg">
+              {renderContent(draggingItemRef.current)}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
