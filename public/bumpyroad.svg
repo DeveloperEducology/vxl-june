@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+  <!-- Background -->
+  <rect width="600" height="300" fill="#a3d89c" />
+  
+  <!-- Tree -->
+  <rect x="480" y="80" width="20" height="80" fill="#8b5a2b" />
+  <circle cx="490" cy="70" r="40" fill="#3c9c3f" />
+
+  <!-- Road -->
+  <polygon points="100,300 200,0 400,0 500,300" fill="#333" />
+  <!-- Road lines -->
+  <line x1="150" y1="300" x2="250" y2="0" stroke="yellow" stroke-width="4" />
+  <line x1="180" y1="300" x2="280" y2="0" stroke="yellow" stroke-width="4" />
+
+  <!-- Cracks -->
+  <path d="M220 200 l10 -20 15 10 -5 20" stroke="black" stroke-width="2" fill="none"/>
+  <path d="M300 150 l15 -15 10 15 -5 15" stroke="black" stroke-width="2" fill="none"/>
+  <path d="M260 100 l-10 15 15 10 -5 -20" stroke="black" stroke-width="2" fill="none"/>
+
+  <!-- Potholes -->
+  <ellipse cx="230" cy="220" rx="20" ry="10" fill="#555" />
+  <ellipse cx="320" cy="170" rx="25" ry="12" fill="#555" />
+  <ellipse cx="270" cy="120" rx="18" ry="8" fill="#555" />
+
+  <!-- Rocks -->
+  <circle cx="200" cy="250" r="8" fill="#b38b6d"/>
+  <circle cx="240" cy="210" r="10" fill="#b38b6d"/>
+  <circle cx="310" cy="160" r="7" fill="#b38b6d"/>
+  <circle cx="280" cy="100" r="9" fill="#b38b6d"/>
+
+  <!-- Tree branch on road -->
+  <rect x="230" y="190" width="80" height="6" fill="#8b5a2b" transform="rotate(-10 230 190)" />
+
+</svg>

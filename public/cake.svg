@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Cake base shadow -->
+  <ellipse cx="100" cy="160" rx="60" ry="8" fill="#999"/>
+
+  <!-- Cake body -->
+  <ellipse cx="100" cy="120" rx="60" ry="20" fill="#ccc"/>
+  <rect x="40" y="70" width="120" height="50" fill="#ddd"/>
+  <ellipse cx="100" cy="70" rx="60" ry="20" fill="#eee"/>
+
+  <!-- Cake decorations -->
+  <ellipse cx="60" cy="120" rx="8" ry="5" fill="#f48fb1"/>
+  <ellipse cx="80" cy="120" rx="8" ry="5" fill="#f48fb1"/>
+  <ellipse cx="100" cy="120" rx="8" ry="5" fill="#f48fb1"/>
+  <ellipse cx="120" cy="120" rx="8" ry="5" fill="#f48fb1"/>
+  <ellipse cx="140" cy="120" rx="8" ry="5" fill="#f48fb1"/>
+
+  <!-- Candles -->
+  <rect x="60" y="40" width="5" height="30" fill="#3399ff"/>
+  <rect x="80" y="40" width="5" height="30" fill="#3399ff"/>
+  <rect x="100" y="40" width="5" height="30" fill="#3399ff"/>
+  <rect x="120" y="40" width="5" height="30" fill="#3399ff"/>
+  <rect x="140" y="40" width="5" height="30" fill="#3399ff"/>
+
+  <!-- Candle flames -->
+  <path d="M62 38 Q60 30 58 38 Z" fill="gold"/>
+  <path d="M82 38 Q80 30 78 38 Z" fill="gold"/>
+  <path d="M102 38 Q100 30 98 38 Z" fill="gold"/>
+  <path d="M122 38 Q120 30 118 38 Z" fill="gold"/>
+  <path d="M142 38 Q140 30 138 38 Z" fill="gold"/>
+
+  <!-- Text -->
+  <text x="75" y="75" font-family="sans-serif" font-size="10" fill="crimson">Happy Birthday!</text>
+</svg>

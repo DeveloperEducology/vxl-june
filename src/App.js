@@ -21,11 +21,8 @@ import WordPhonetics from "./components/WordPhonetics";
 import SortingWords from "./othertesting/SortingWords";
 import MatchingQuiz from "./pages/MatchingComponent";
 
-
-
 function App() {
   return (
-    
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/ph" element={<Phonetics />} />

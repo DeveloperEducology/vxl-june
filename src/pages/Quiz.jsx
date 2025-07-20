@@ -145,7 +145,7 @@ const Quiz = () => {
       } finally {
         setTimeout(() => {
           setLoading(false);
-        }, 500);
+        });
       }
     };
 
@@ -1768,11 +1768,10 @@ const Quiz = () => {
                 "multiply",
               ].includes(question?.type) && (
                 <div className="flex gap-10 mt-6">
-                  {question?.type !== "phonetics" && (
-                    <button
-                      onClick={checkAnswer}
-                      disabled={!allInputsFilled()}
-                      className={`
+                  <button
+                        onClick={checkAnswer}
+                        disabled={!allInputsFilled()}
+                        className={`
                           mt-4 px-6 py-2 rounded text-white font-semibold transition
                           ${
                             allInputsFilled()
@@ -1780,12 +1779,11 @@ const Quiz = () => {
                               : "bg-gray-400 cursor-not-allowed"
                           }
                         `}
-                      aria-label="Submit answer"
-                      type="button"
-                    >
-                      Submit
-                    </button>
-                  )}
+                        aria-label="Submit answer"
+                        type="button"
+                      >
+                        Submit
+                      </button>
 
                   <button
                     onClick={goToNextQuestion}

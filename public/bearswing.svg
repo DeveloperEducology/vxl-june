@@ -1,0 +1,53 @@
+<svg width="320" height="400" viewBox="0 0 320 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Leafless tree -->
+  <rect x="145" y="180" width="30" height="120" rx="10" fill="#8B5E3C"/>
+  <rect x="135" y="200" width="10" height="50" rx="5" fill="#8B5E3C"/>
+  <rect x="185" y="205" width="10" height="40" rx="5" fill="#8B5E3C"/>
+  <rect x="160" y="190" width="7" height="30" rx="3" fill="#8B5E3C" transform="rotate(-30 160 190)"/>
+  <rect x="173" y="193" width="8" height="35" rx="4" fill="#8B5E3C" transform="rotate(25 173 193)"/>
+  
+  <!-- Swing ropes -->
+  <rect x="155" y="260" width="3" height="60" rx="1.5" fill="#A4826A"/>
+  <rect x="182" y="260" width="3" height="60" rx="1.5" fill="#A4826A"/>
+  <!-- Swing seat -->
+  <rect x="152" y="315" width="36" height="10" rx="4" fill="#F4B183"/>
+  
+  <!-- Bear body -->
+  <ellipse cx="170" cy="330" rx="15" ry="17" fill="#C6895E"/>
+  <!-- Bear head -->
+  <ellipse cx="170" cy="310" rx="11" ry="12" fill="#C6895E"/>
+  <!-- Bear ears -->
+  <ellipse cx="160" cy="300" rx="3" ry="5" fill="#C6895E"/>
+  <ellipse cx="180" cy="300" rx="3" ry="5" fill="#C6895E"/>
+  <ellipse cx="160" cy="300" rx="1.2" ry="2" fill="#EBC7A7"/>
+  <ellipse cx="180" cy="300" rx="1.2" ry="2" fill="#EBC7A7"/>
+  <!-- Bear face -->
+  <ellipse cx="170" cy="313" rx="2" ry="1.2" fill="#63320C"/>
+  <ellipse cx="167" cy="308" rx="1" ry="1" fill="#63320C"/>
+  <ellipse cx="173" cy="308" rx="1" ry="1" fill="#63320C"/>
+  <!-- Bear arms -->
+  <ellipse cx="160" cy="335" rx="3.5" ry="8" fill="#C6895E" transform="rotate(-25 160 335)"/>
+  <ellipse cx="180" cy="335" rx="3.5" ry="8" fill="#C6895E" transform="rotate(25 180 335)"/>
+  <!-- Bear legs -->
+  <ellipse cx="165" cy="345" rx="3.5" ry="5" fill="#C6895E"/>
+  <ellipse cx="175" cy="345" rx="3.5" ry="5" fill="#C6895E"/>
+
+  <!-- COLOR PALETTE -->
+  <rect x="40" y="370" width="30" height="15" fill="#8B5E3C"/>
+  <rect x="75" y="370" width="30" height="15" fill="#A4826A"/>
+  <rect x="110" y="370" width="30" height="15" fill="#F4B183"/>
+  <rect x="145" y="370" width="30" height="15" fill="#C6895E"/>
+  <rect x="180" y="370" width="30" height="15" fill="#EBC7A7"/>
+  <rect x="215" y="370" width="30" height="15" fill="#63320C"/>
+  
+  <!-- Palette labels -->
+  <text x="40" y="398" font-size="8" fill="#000">#8B5E3C</text>
+  <text x="75" y="398" font-size="8" fill="#000">#A4826A</text>
+  <text x="110" y="398" font-size="8" fill="#000">#F4B183</text>
+  <text x="145" y="398" font-size="8" fill="#000">#C6895E</text>
+  <text x="180" y="398" font-size="8" fill="#000">#EBC7A7</text>
+  <text x="215" y="398" font-size="8" fill="#000">#63320C</text>
+</svg>
+
+
+

@@ -1,0 +1,804 @@
+[
+  {
+    
+    "type": "eq-mcq",
+    "pieces": [
+      { "objectType": "PlainText", "text": "Solve for " },
+      { "objectType": "QMAlgebraic", "latex": "x" },
+      { "objectType": "PlainText", "text": ": " },
+      { "objectType": "QMEquation", "latex": "x^2 - 4 = 0" },
+      { "objectType": "PlainText", "text": ". Answer: " },
+      { "objectType": "QMInput", "id": "input_1", "correctAnswer": "2" }
+    ],
+    "options": [
+      { "text": "2", "isCorrect": true },
+      { "text": "-2", "isCorrect": false },
+      { "text": "4", "isCorrect": false },
+      { "text": "0", "isCorrect": false }
+    ],
+    "lessonId": "686f5d8ba4ba033643880e8c"
+  },
+  {
+    
+    "type": "eq-mcq",
+    "pieces": [
+      { "objectType": "PlainText", "text": "Evaluate: " },
+      { "objectType": "QMEquation", "latex": "\\frac{6}{2} + 1" },
+      { "objectType": "PlainText", "text": ". Answer: " },
+      { "objectType": "QMInput", "id": "input_2", "correctAnswer": "4" }
+    ],
+    "options": [
+      { "text": "4", "isCorrect": true },
+      { "text": "2", "isCorrect": false },
+      { "text": "3", "isCorrect": false },
+      { "text": "5", "isCorrect": false }
+    ],
+    "lessonId": "686f5d8ba4ba033643880e8c"
+  },
+  {
+    
+    "type": "eq-mcq",
+    "pieces": [
+      { "objectType": "PlainText", "text": "What is the value of " },
+      { "objectType": "QMEquation", "latex": "3^2 + 4^2" },
+      { "objectType": "PlainText", "text": "? Answer: " },
+      { "objectType": "QMInput", "id": "input_3", "correctAnswer": "25" }
+    ],
+    "options": [
+      { "text": "25", "isCorrect": true },
+      { "text": "24", "isCorrect": false },
+      { "text": "16", "isCorrect": false },
+      { "text": "9", "isCorrect": false }
+    ],
+    "lessonId": "686f5d8ba4ba033643880e8c"
+  },
+  {
+    
+    "type": "eq-mcq",
+    "pieces": [
+      { "objectType": "PlainText", "text": "Integrate: " },
+      { "objectType": "QMEquation", "latex": "\\int x^2 \\, dx" },
+      { "objectType": "PlainText", "text": ". Answer: " },
+      { "objectType": "QMInput", "id": "input_4", "correctAnswer": "\\frac{1}{3}x^3 + C" }
+    ],
+    "options": [
+      { "latex": "\\frac{1}{3}x^3 + C", "isCorrect": true },
+      { "latex": "\\frac{1}{2}x^2 + C", "isCorrect": false },
+      { "latex": "x^3 + C", "isCorrect": false },
+      { "latex": "\\frac{3}{2}x^2 + C", "isCorrect": false }
+    ],
+    "lessonId": "686f5d8ba4ba033643880e8c"
+  },
+  {
+    
+    "type": "eq-mcq",
+    "pieces": [
+      { "objectType": "PlainText", "text": "Find the indefinite integral of " },
+      { "objectType": "QMEquation", "latex": "\\int \\sin(x) \\, dx" },
+      { "objectType": "PlainText", "text": ". Answer: " },
+      { "objectType": "QMInput", "id": "input_5", "correctAnswer": "-\\cos(x) + C" }
+    ],
+    "options": [
+      { "latex": "-\\cos(x) + C", "isCorrect": true },
+      { "latex": "\\cos(x) + C", "isCorrect": false },
+      { "latex": "\\sin(x) + C", "isCorrect": false },
+      { "latex": "-\\sin(x) + C", "isCorrect": false }
+    ],
+    "lessonId": "686f5d8ba4ba033643880e8c"
+  },
+  {
+    
+    "type": "eq-mcq",
+    "pieces": [
+      { "objectType": "PlainText", "text": "Evaluate the definite integral: " },
+      { "objectType": "QMEquation", "latex": "\\int_0^1 2x \\, dx" },
+      { "objectType": "PlainText", "text": ". Answer: " },
+      { "objectType": "QMInput", "id": "input_6", "correctAnswer": "1" }
+    ],
+    "options": [
+      { "text": "1", "isCorrect": true },
+      { "text": "2", "isCorrect": false },
+      { "text": "0", "isCorrect": false },
+      { "text": "4", "isCorrect": false }
+    ],
+    "lessonId": "686f5d8ba4ba033643880e8c"
+  },
+  {
+    
+    "type": "eq-mcq",
+    "pieces": [
+      { "objectType": "PlainText", "text": "Solve for: " },
+      {
+        "objectType": "QMEquation",
+        "latex": "\\sum_{k=1}^{13} \\frac{1}{\\sin\\left( \\frac{\\pi}{4} + \\frac{(k - 1)\\pi}{6} \\right) \\cdot \\sin\\left( \\frac{\\pi}{4} + \\frac{k\\pi}{6} \\right)} ="
+      },
+      { "objectType": "QMInput", "id": "input_7", "correctAnswer": "1" }
+    ],
+    "options": [
+      { "text": "1", "isCorrect": true },
+      { "text": "0", "isCorrect": false },
+      { "text": "13", "isCorrect": false },
+      { "text": "2", "isCorrect": false }
+    ],
+    "lessonId": "686f5d8ba4ba033643880e8c"
+  },
+  {
+    
+    "type": "eq-mcq",
+    "pieces": [
+      { "objectType": "PlainText", "text": "The maximum value of " },
+      {
+        "objectType": "QMEquation",
+        "latex": "1 + \\sin\\left( \\frac{\\pi}{4} + \\theta \\right) + 2\\cos\\left( \\frac{\\pi}{4} - \\theta \\right)"
+      },
+      { "objectType": "PlainText", "text": "\\\\ \\\\theta \\\\in \\\\mathbb{R},\\\\ \\\\text{is:}" },
+      { "objectType": "QMInput", "id": "input_1", "correctAnswer": "3" }
+    ],
+    "options": [
+      { "text": "3", "isCorrect": true },
+      { "text": "2", "isCorrect": false },
+      { "text": "1", "isCorrect": false },
+      { "text": "4", "isCorrect": false }
+    ],
+    "lessonId": "686f5d8ba4ba033643880e8c"
+  },
+  {
+    
+    "lessonId": "686f5d8ba4ba033643880e8c",
+    "type": "eq-mcq",
+    "pieces": [
+      { "objectType": "PlainText", "text": "Evaluate the expression: " },
+      {
+        "objectType": "QMEquation",
+        "latex": "\\cos^2\\left(\\frac{\\pi}{12}\\right) + \\cos^2\\left(\\frac{\\pi}{4}\\right) + \\cos^2\\left(\\frac{5\\pi}{12}\\right)"
+      },
+      { "objectType": "PlainText", "text": " is:" }
+    ],
+    "options": [
+      { "latex": "\\frac{2}{3+\\sqrt{3}}", "isCorrect": false },
+      { "latex": "\\frac{2}{3}", "isCorrect": false },
+      { "latex": "\\frac{3+\\sqrt{3}}{2}", "isCorrect": true },
+      { "latex": "\\frac{3}{2}", "isCorrect": false }
+    ]
+  }
+]
+
+
+
+
+
+
+[
+  {
+    "base": "pen",
+    "rhymes": ["hen", "ten", "den", "men", "when"]
+  },
+  {
+    "base": "student",
+    "rhymes": ["prudent", "fluent", "mutant", "imprudent", "truant"]
+  },
+  {
+    "base": "shining",
+    "rhymes": ["dining", "lining", "pining", "whining", "declining"]
+  },
+  {
+    "base": "run",
+    "rhymes": ["fun", "sun", "bun", "done", "none"]
+  },
+  {
+    "base": "friend",
+    "rhymes": ["bend", "send", "lend", "tend", "end"]
+  }
+]
+
+
+```json
+[
+  {
+    "text": ["ఇటీవల ఈ-క్యాబినెట్ విధానాన్ని ప్రవేశపెట్టిన రాష్ట్ర ప్రభుత్వం ఏది?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "ఆంధ్రప్రదేశ్",
+        "isCorrect": false
+      },
+      {
+        "text": "తెలంగాణ",
+        "isCorrect": true
+      },
+      {
+        "text": "కర్ణాటక",
+        "isCorrect": false
+      },
+      {
+        "text": "తమిళనాడు",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["కులం గణనతో సహా జనగణన 2027 నోటిఫికేషన్‌ను హోం మంత్రిత్వ శాఖ ఎప్పుడు విడుదల చేసింది?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "జూన్ 1, 2025",
+        "isCorrect": false
+      },
+      {
+        "text": "జూన్ 16, 2025",
+        "isCorrect": true
+      },
+      {
+        "text": "జూలై 1, 2025",
+        "isCorrect": false
+      },
+      {
+        "text": "ఆగస్టు 16, 2025",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["జూన్ 6, 2025న ప్రధాని నరేంద్ర మోడీ ప్రారంభించిన ప్రపంచంలోనే అత్యంత ఎత్తైన రైల్వే ఆర్చ్ బ్రిడ్జి పేరు ఏమిటి?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "బోగీబీల్ వంతెన",
+        "isCorrect": false
+      },
+      {
+        "text": "పాంబన్ వంతెన",
+        "isCorrect": false
+      },
+      {
+        "text": "చెనాబ్ రైల్ బ్రిడ్జి",
+        "isCorrect": true
+      },
+      {
+        "text": "బాంద్రా-వర్లీ సీ లింక్",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["జూన్ 4 నుండి 6, 2025 వరకు తన 55వ ద్రవ్య విధాన కమిటీ (MPC) సమావేశాన్ని నిర్వహించిన సంస్థ ఏది?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "సెబీ",
+        "isCorrect": false
+      },
+      {
+        "text": "నాబార్డ్",
+        "isCorrect": false
+      },
+      {
+        "text": "ఆర్‌బిఐ",
+        "isCorrect": true
+      },
+      {
+        "text": "ఆర్థిక మంత్రిత్వ శాఖ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["జూన్ 2025 నాటికి డిజిటల్ ఇండియా కార్యక్రమం ఎన్ని సంవత్సరాలు పూర్తి చేసుకుంది?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "5 సంవత్సరాలు",
+        "isCorrect": false
+      },
+      {
+        "text": "8 సంవత్సరాలు",
+        "isCorrect": false
+      },
+      {
+        "text": "11 సంవత్సరాలు",
+        "isCorrect": true
+      },
+      {
+        "text": "15 సంవత్సరాలు",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["ఏ భారతీయ రాష్ట్రం 'బోనాలు'ను రాష్ట్ర పండుగగా జరుపుకుంటుంది?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "కేరళ",
+        "isCorrect": false
+      },
+      {
+        "text": "తెలంగాణ",
+        "isCorrect": true
+      },
+      {
+        "text": "రాజస్థాన్",
+        "isCorrect": false
+      },
+      {
+        "text": "పశ్చిమ బెంగాల్",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["జూట్ ఉత్పత్తుల దిగుమతులపై కఠినమైన ఆంక్షలు విధించి, నవశేవ సీపోర్ట్ ద్వారా మాత్రమే ప్రవేశాన్ని అనుమతించిన దేశం ఏది?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "నేపాల్",
+        "isCorrect": false
+      },
+      {
+        "text": "మయన్మార్",
+        "isCorrect": false
+      },
+      {
+        "text": "బంగ్లాదేశ్",
+        "isCorrect": true
+      },
+      {
+        "text": "శ్రీలంక",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["కేంద్ర బడ్జెట్ 2025 యొక్క థీమ్ ఏమిటి?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "ఆత్మనిర్భర్ భారత్",
+        "isCorrect": false
+      },
+      {
+        "text": "డిజిటల్ ఇండియా",
+        "isCorrect": false
+      },
+      {
+        "text": "సబ్‌కా వికాస్",
+        "isCorrect": true
+      },
+      {
+        "text": "గరీబ్ కళ్యాణ్",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["జూన్ 2025లో రెండేవూస్, డాకింగ్ మరియు అన్‌డాకింగ్ టెక్నాలజీలను విజయవంతంగా ప్రదర్శించిన ఇస్రో మిషన్ ఏది?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "చంద్రయాన్-4",
+        "isCorrect": false
+      },
+      {
+        "text": "గగన్‌యాన్",
+        "isCorrect": false
+      },
+      {
+        "text": "స్పేడెక్స్ (SpaDeX)",
+        "isCorrect": true
+      },
+      {
+        "text": "ఆదిత్య-L2",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["ఆక్సియమ్ 4 మిషన్ ద్వారా అంతర్జాతీయ అంతరిక్ష కేంద్రం (ISS)పై అడుగుపెట్టిన మొదటి భారతీయుడు ఎవరు?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "వింగ్ కమాండర్ రాకేష్ శర్మ",
+        "isCorrect": false
+      },
+      {
+        "text": "కల్పనా చావ్లా",
+        "isCorrect": false
+      },
+      {
+        "text": "సునీతా విలియమ్స్",
+        "isCorrect": false
+      },
+      {
+        "text": "IAF గ్రూప్ కెప్టెన్ సుభాంశు శుక్లా",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "text": ["జూన్ 2025లో UN ప్రపంచ ఆరోగ్య సంస్థ (WHO) నివేదిక ప్రకారం, ఒంటరితనంతో ఎంతమంది ప్రజలు ప్రభావితమవుతున్నారు?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "పది మందిలో ఒకరు",
+        "isCorrect": false
+      },
+      {
+        "text": "ఆరు మందిలో ఒకరు",
+        "isCorrect": true
+      },
+      {
+        "text": "ముగ్గురిలో ఒకరు",
+        "isCorrect": false
+      },
+      {
+        "text": "ఇద్దరిలో ఒకరు",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["జూన్ 2025లో ఇరాన్ నుండి ఎంతమంది ఆఫ్ఘన్ వలసదారులు తిరిగి వచ్చారు?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "100,000 కంటే తక్కువ",
+        "isCorrect": false
+      },
+      {
+        "text": "100,000 మరియు 200,000 మధ్య",
+        "isCorrect": false
+      },
+      {
+        "text": "256,000",
+        "isCorrect": true
+      },
+      {
+        "text": "500,000 కంటే ఎక్కువ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["జూన్ 2025లో అణ్వాయుధ యుద్ధం యొక్క ఆరోగ్య ప్రభావాలను అంచనా వేయడంపై ఒక తీర్మానాన్ని ఆమోదించిన సంస్థ ఏది?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "UN భద్రతా మండలి",
+        "isCorrect": false
+      },
+      {
+        "text": "అంతర్జాతీయ అణుశక్తి సంస్థ (IAEA)",
+        "isCorrect": false
+      },
+      {
+        "text": "UN ప్రపంచ ఆరోగ్య సంస్థ (WHO)",
+        "isCorrect": true
+      },
+      {
+        "text": "UN జనరల్ అసెంబ్లీ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["అభివృద్ధి చెందుతున్న దేశాల సుస్థిరాభివృద్ధి లక్ష్యాల కోసం $4 ట్రిలియన్ల నిధుల లోటును పరిష్కరించడానికి ప్రపంచ నాయకులు ఏ నగరంలో సమావేశమయ్యారు?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "జెనీవా",
+        "isCorrect": false
+      },
+      {
+        "text": "న్యూయార్క్",
+        "isCorrect": false
+      },
+      {
+        "text": "సెవిల్లా",
+        "isCorrect": true
+      },
+      {
+        "text": "లండన్",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "text": ["జూన్ 2025లో రెడ్ సీలో GPS స్పూఫింగ్ పెరగడానికి ప్రధాన కారణం ఏమిటి?"],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "mcq",
+    "options": [
+      {
+        "text": "సూర్య మంటలు",
+        "isCorrect": false
+      },
+      {
+        "text": "షిప్పింగ్ ట్రాఫిక్ పెరగడం",
+        "isCorrect": false
+      },
+      {
+        "text": "ప్రాంతీయ వివాదాలు కొనసాగడం",
+        "isCorrect": true
+      },
+      {
+        "text": "సాంకేతిక లోపం",
+        "isCorrect": false
+      }
+    ]
+  }
+]
+
+
+
+
+
+[
+  {
+    "text": ["జూన్ 2025లో తెలంగాణ రాష్ట్రానికి సంబంధించి కిందివాటిలో సరైనవి ఏవి?"],
+    "options": [
+      {
+        "text": "తెలంగాణ ప్రభుత్వం ఈ-క్యాబినెట్ సిస్టమ్‌ను ప్రవేశపెట్టింది.",
+        "isCorrect": true
+      },
+      {
+        "text": "జూన్ 2, 2025న తెలంగాణ ఉన్నత విద్యామండలి రాష్ట్ర అవతరణ దినోత్సవాన్ని జరుపుకుంది.",
+        "isCorrect": true
+      },
+      {
+        "text": "ఈలెట్స్ ఫ్యూచర్‌ఎడ్ సమ్మిట్ జూన్ 17, 2025న జరిగింది.",
+        "isCorrect": true
+      },
+      {
+        "text": "బోనాల పండుగను జాతీయ పండుగగా గుర్తించారు.",
+        "isCorrect": false
+      }
+    ],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "multi"
+  },
+  {
+    "text": ["జనగణన 2027 మరియు చెనాబ్ రైల్ బ్రిడ్జి గురించి సరైన వాక్యాలు ఏవి?"],
+    "options": [
+      {
+        "text": "జనగణన 2027లో కుల గణనను చేర్చనున్నారు.",
+        "isCorrect": true
+      },
+      {
+        "text": "జనగణన 2027 రెండు దశల్లో జరుగుతుంది.",
+        "isCorrect": true
+      },
+      {
+        "text": "చెనాబ్ రైల్ బ్రిడ్జిని జూన్ 6, 2025న ప్రధాని మోడీ ప్రారంభించారు.",
+        "isCorrect": true
+      },
+      {
+        "text": "చెనాబ్ రైల్ బ్రిడ్జి ప్రపంచంలోనే ఎత్తైన కేబుల్-స్టేడ్ రైల్వే బ్రిడ్జి.",
+        "isCorrect": false
+      }
+    ],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "multi"
+  },
+  {
+    "text": ["జూన్ 2025లో భారత ఆర్థిక వ్యవస్థకు సంబంధించిన సరైన ప్రకటనలు ఏవి?"],
+    "options": [
+      {
+        "text": "భారతదేశం ప్రపంచంలో 4వ అతిపెద్ద ఆర్థిక వ్యవస్థగా అవతరించింది.",
+        "isCorrect": true
+      },
+      {
+        "text": "2024-25లో స్థూల దేశీయోత్పత్తి (GDP) వృద్ధి 6.5% గా అంచనా వేయబడింది.",
+        "isCorrect": true
+      },
+      {
+        "text": "ద్రవ్యోల్బణం మే 2025లో 2.82%కి తగ్గింది.",
+        "isCorrect": true
+      },
+      {
+        "text": "విదేశీ మారక నిల్వలు జూన్ 20, 2025 నాటికి USD 500 బిలియన్ల కంటే తక్కువగా ఉన్నాయి.",
+        "isCorrect": false
+      }
+    ],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "multi"
+  },
+  {
+    "text": ["ఇస్రో యొక్క SpaDeX మిషన్ గురించి సరైన వాక్యాలు ఏవి?"],
+    "options": [
+      {
+        "text": "SpaDeX మిషన్ అంతరిక్షంలో డాకింగ్ మరియు అన్‌డాకింగ్ టెక్నాలజీలను ప్రదర్శించింది.",
+        "isCorrect": true
+      },
+      {
+        "text": "ఇది భవిష్యత్తులో మానవ సహిత అంతరిక్ష ప్రయాణాలకు కీలకం.",
+        "isCorrect": true
+      },
+      {
+        "text": "రెండు ఉపగ్రహాలను స్వయంప్రతిపత్తితో డాక్ చేయడంలో ఇస్రో విజయవంతమైంది.",
+        "isCorrect": true
+      },
+      {
+        "text": "ఈ మిషన్ చంద్రయాన్-3లో ఉపయోగించబడింది.",
+        "isCorrect": false
+      }
+    ],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "multi"
+  },
+  {
+    "text": ["జూన్ 2025 నాటికి అంతర్జాతీయంగా జరిగిన ముఖ్య సంఘటనల గురించి సరైనవి ఏవి?"],
+    "options": [
+      {
+        "text": "గాజాలో మానవతా సంక్షోభం తీవ్రమైంది.",
+        "isCorrect": true
+      },
+      {
+        "text": "ఉక్రెయిన్‌లో డ్రోన్ దాడులు తీవ్రతరం అయ్యాయి.",
+        "isCorrect": true
+      },
+      {
+        "text": "ఇరాన్ మరియు ఇజ్రాయెల్ మధ్య కాల్పుల విరమణ ఒప్పందం కుదిరింది.",
+        "isCorrect": true
+      },
+      {
+        "text": "WHO నివేదిక ప్రకారం, ఒంటరితనం వల్ల మరణించిన వారి సంఖ్య గత సంవత్సరం తగ్గింది.",
+        "isCorrect": false
+      }
+    ],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "multi"
+  },
+  {
+    "text": ["జూన్ 2025లో WHO ఒంటరితనంపై ఇచ్చిన నివేదికకు సంబంధించి కిందివాటిలో సరైనవి ఏవి?"],
+    "options": [
+      {
+        "text": "ప్రతి ఆరుగురిలో ఒకరు ఒంటరితనంతో ప్రభావితమవుతున్నారు.",
+        "isCorrect": true
+      },
+      {
+        "text": "ఒంటరితనం సంబంధిత కారణాలతో గంటకు 100 మంది మరణిస్తున్నారని WHO నివేదించింది.",
+        "isCorrect": true
+      },
+      {
+        "text": "ఈ నివేదిక ప్రపంచవ్యాప్తంగా ఒంటరితనం యొక్క తీవ్రతను నొక్కి చెప్పింది.",
+        "isCorrect": true
+      },
+      {
+        "text": "ఈ నివేదిక కేవలం అభివృద్ధి చెందిన దేశాలకు మాత్రమే పరిమితమైంది.",
+        "isCorrect": false
+      }
+    ],
+    "lessonId": "68748299c9e206626897a095",
+    "type": "multi"
+  }
+]
+
+
+
+
+
+{
+  "instruction": "Match each famous sportsperson's photo on the left with their correct name on the right",
+  "hint": "Look carefully at the images!",
+  "type": "matching",
+  "lessonId": "6877150a6758e304b05066dd",
+  "leftColumn": [
+    {
+      "id": 1,
+      "type": "image",
+      "content": "https://i.pinimg.com/564x/63/b6/c5/63b6c541ae6670f35c98b58b3d7ed050.jpg"
+    },
+    {
+      "id": 2,
+      "type": "image",
+      "content": "https://i.ytimg.com/vi/SRlyN60brTo/mqdefault.jpg"
+    },
+    {
+      "id": 3,
+      "type": "image",
+      "content": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiqut5QCUhacIrAoIJpcPwnRbpQfMVm_lDQw&s"
+    },
+    {
+      "id": 4,
+      "type": "image",
+      "content": "https://images.mid-day.com/images/images/2017/nov/Many-Marys-A.jpg"
+    },
+    {
+      "id": 5,
+      "type": "image",
+      "content": "https://e7.pngegg.com/pngimages/618/259/png-clipart-sachin-tendulkar-india-national-cricket-team-cricket-world-cup-south-africa-national-cricket-team-cricket-over-sports-thumbnail.png"
+    }
+  ],
+  "rightColumn": [
+    { "id": "c", "type": "text", "content": "M. S. Dhoni", "matchId": 3 },
+    { "id": "a", "type": "text", "content": "Virat Kohli", "matchId": 1 },
+    { "id": "d", "type": "text", "content": "Mary Kom", "matchId": 4 },
+    { "id": "e", "type": "text", "content": "Sachin Tendulkar", "matchId": 5 },
+    { "id": "b", "type": "text", "content": "P. V. Sindhu", "matchId": 2 }
+  ]
+}
+
+
+
+
+{
+  "_id": {
+    "$oid": "687715dc5075f602e8ec229f"
+  },
+  "instruction": "Match each Indian state on the left with its correct capital on the right",
+  "hint": "Think about the official capital city of each state!",
+  "type": "matching",
+  "lessonId": "6877150a6758e304b05066dd",
+  "leftColumn": [
+    {
+      "id": 1,
+      "type": "text",
+      "content": "Maharashtra"
+    },
+    {
+      "id": 2,
+      "type": "text",
+      "content": "Karnataka"
+    },
+    {
+      "id": 3,
+      "type": "text",
+      "content": "Tamil Nadu"
+    },
+    {
+      "id": 4,
+      "type": "text",
+      "content": "Rajasthan"
+    },
+    {
+      "id": 5,
+      "type": "text",
+      "content": "West Bengal"
+    }
+  ],
+  "rightColumn": [
+    {
+      "id": "a",
+      "type": "text",
+      "content": "Chennai",
+      "matchId": 3
+    },
+    {
+      "id": "b",
+      "type": "text",
+      "content": "Bengaluru",
+      "matchId": 2
+    },
+    {
+      "id": "c",
+      "type": "text",
+      "content": "Jaipur",
+      "matchId": 4
+    },
+    {
+      "id": "d",
+      "type": "text",
+      "content": "Kolkata",
+      "matchId": 5
+    },
+    {
+      "id": "e",
+      "type": "text",
+      "content": "Mumbai",
+      "matchId": 1
+    }
+  ]
+}

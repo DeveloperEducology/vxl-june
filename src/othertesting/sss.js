@@ -136,6 +136,14 @@ export default function PictureMCQ({
         </p>
       ))}
 
+{
+  lesson.prompt && (
+    <p className="text-4xl font-medium text-gray-800">
+      <span className="font-semibold"></span> {lesson.prompt}
+    </p>
+  )
+}
+
       {/* Lesson image (if any) */}
       {lesson.image && (
         <div className="flex justify-left">
@@ -164,10 +172,18 @@ export default function PictureMCQ({
               } ${submitted ? "cursor-not-allowed opacity-90" : ""}`}
               disabled={submitted}
             >
-              {option.image && (
+              {option.image ? (
+                <img src={option.image} className="w-25 h-25 sm:h-20 w-20" />
+              ) : (
                 <div
                   // className="w-24 h-24 mb-2"
                   dangerouslySetInnerHTML={{ __html: option.image }}
+                ></div>
+              )}
+              {option.text && (
+                <div
+                  // className="w-24 h-24 mb-2"
+                  dangerouslySetInnerHTML={{ __html: option.text }}
                 ></div>
               )}
 

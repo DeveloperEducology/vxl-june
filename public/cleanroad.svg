@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+  <!-- Background -->
+  <rect width="600" height="300" fill="#a3d89c" />
+  
+  <!-- Tree -->
+  <rect x="480" y="80" width="20" height="80" fill="#8b5a2b" />
+  <circle cx="490" cy="70" r="40" fill="#3c9c3f" />
+
+  <!-- Smooth road -->
+  <polygon points="100,300 200,0 400,0 500,300" fill="#333" />
+
+  <!-- Clear yellow road lines -->
+  <line x1="150" y1="300" x2="250" y2="0" stroke="yellow" stroke-width="4" />
+  <line x1="180" y1="300" x2="280" y2="0" stroke="yellow" stroke-width="4" />
+
+  <!-- No cracks, no potholes, no debris -->
+  <!-- Just a clean road surface -->
+
+</svg>

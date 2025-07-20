@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100">
+  <!-- Banana shape -->
+  <path d="M20 50 Q50 90 90 40 Q80 50 40 20 Z" fill="gold" stroke="#d4a300" stroke-width="2"/>
+  <!-- Stem -->
+  <rect x="18" y="48" width="4" height="10" fill="brown"/>
+</svg>

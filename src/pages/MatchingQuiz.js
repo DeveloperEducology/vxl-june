@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const MatchingQuiz = ({ instruction, hint, leftColumn = [], rightColumn = [], onAnswer }) => {
+const MatchingQuiz = ({
+  instruction,
+  hint,
+  leftColumn = [],
+  rightColumn = [],
+  onAnswer,
+}) => {
   const [rightItems, setRightItems] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showHint, setShowHint] = useState(false);
@@ -70,9 +76,10 @@ const MatchingQuiz = ({ instruction, hint, leftColumn = [], rightColumn = [], on
   };
 
   const getRemainingItems = () => {
-    const usedIds = rightItems.filter(Boolean).map((it) => it.id);
-    return rightColumn.filter((item) => !usedIds.includes(item.id));
-  };
+  const usedIds = rightItems.filter(Boolean).map((it) => it.id);
+  return rightColumn.filter((item) => !usedIds.includes(item.id));
+};
+
 
   const checkAnswer = () => {
     setIsSubmitted(true);
@@ -82,7 +89,11 @@ const MatchingQuiz = ({ instruction, hint, leftColumn = [], rightColumn = [], on
       if (right && right.matchId === left.id) correctCount++;
     });
     const isCorrect = correctCount === leftColumn.length;
-    setFeedback(isCorrect ? "✅ All correct!" : `❌ ${correctCount}/${leftColumn.length} correct`);
+    setFeedback(
+      isCorrect
+        ? "✅ All correct!"
+        : `❌ ${correctCount}/${leftColumn.length} correct`
+    );
     if (onAnswer) onAnswer(isCorrect);
   };
 
@@ -99,7 +110,13 @@ const MatchingQuiz = ({ instruction, hint, leftColumn = [], rightColumn = [], on
   const renderContent = (item) => {
     if (!item) return "";
     if (item?.type === "image") {
-      return <img src={item.content} alt="match" className="w-14 h-14 object-cover rounded" />;
+      return (
+        <img
+          src={item.content}
+          alt="match"
+          className="w-14 h-14 object-cover rounded"
+        />
+      );
     }
     return <span>{item.content}</span>;
   };
@@ -110,7 +127,10 @@ const MatchingQuiz = ({ instruction, hint, leftColumn = [], rightColumn = [], on
 
       {hint && (
         <>
-          <button onClick={() => setShowHint(!showHint)} className="text-blue-600 hover:underline text-sm">
+          <button
+            onClick={() => setShowHint(!showHint)}
+            className="text-blue-600 hover:underline text-sm"
+          >
             {showHint ? "Hide Hint" : "Show Hint"}
           </button>
           <AnimatePresence>
@@ -133,7 +153,11 @@ const MatchingQuiz = ({ instruction, hint, leftColumn = [], rightColumn = [], on
           const rightItem = rightItems[idx];
 
           return (
-            <motion.div layout key={leftItem.id} className="grid grid-cols-2 gap-4 items-stretch">
+            <motion.div
+              layout
+              key={leftItem.id}
+              className="grid grid-cols-2 gap-4 items-stretch"
+            >
               <div className="flex justify-center items-center p-3 bg-gray-200 rounded min-h-[70px]">
                 {renderContent(leftItem)}
               </div>
@@ -164,18 +188,28 @@ const MatchingQuiz = ({ instruction, hint, leftColumn = [], rightColumn = [], on
       </motion.div>
 
       {feedback && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 text-center font-semibold">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 text-center font-semibold"
+        >
           {feedback}
         </motion.div>
       )}
 
       <div className="flex gap-3 mt-4">
         {!isSubmitted ? (
-          <button onClick={checkAnswer} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <button
+            onClick={checkAnswer}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
             Submit
           </button>
         ) : (
-          <button onClick={resetQuiz} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+          <button
+            onClick={resetQuiz}
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+          >
             Try Again
           </button>
         )}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80">
+  <!-- Watermelon slice -->
+  <path d="M20 60 Q60 10 100 60 Z" fill="red" stroke="green" stroke-width="5"/>
+  <!-- Seeds -->
+  <ellipse cx="50" cy="40" rx="2" ry="4" fill="black"/>
+  <ellipse cx="60" cy="30" rx="2" ry="4" fill="black"/>
+  <ellipse cx="70" cy="40" rx="2" ry="4" fill="black"/>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Apple body -->
+  <path d="M50 30 C20 25, 20 70, 50 80 C80 70, 80 25, 50 30 Z" fill="red"/>
+  <!-- Leaf -->
+  <path d="M50 20 C55 10, 65 10, 70 20 C65 18, 55 18, 50 20 Z" fill="green"/>
+  <!-- Stem -->
+  <rect x="48" y="20" width="4" height="8" fill="brown"/>
+  <!-- Highlight -->
+  <circle cx="40" cy="45" r="6" fill="white" opacity="0.3"/>
+</svg>

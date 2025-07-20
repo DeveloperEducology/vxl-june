@@ -52,16 +52,20 @@ export default function PictureAdditionQuiz({
 
       {/* Show Illustration Emojis (Big) in a row */}
       {lesson.illustration && lesson.illustration.length > 0 && (
-        <div className="flex flex-row flex-wrap gap-4 sm:gap-6 items-left justify-left text-4xl sm:text-6xl leading-snug font-normal">
+        <div className="flex flex-row flex-wrap gap-4 sm:gap-6 items-left justify-left text-5xl sm:text-4xl leading-snug font-normal">
           {lesson.illustration.map((line, idx) => (
             <span
               key={`illustration-${idx}`}
               style={{
-                backgroundColor: "#bbbfb8",
+                // backgroundColor: "#bbbfb8",
                 padding: 2,
                 borderRadius: 5,
                 margin: 2,
                 display: "inline-block",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                transition: "transform 0.2s",
+                cursor: "pointer",
+                MozWindowDragging: 'drag',
               }}
             >
               {line}
