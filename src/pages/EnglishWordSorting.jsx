@@ -7,7 +7,6 @@ export default function EnglishWordSorting({
   onNext,
   onReset,
 }) {
-  // ✅ Choose correct source (images or words)
   const initialSource =
     question.images?.length > 0
       ? question.images.map((img) => img.url)
@@ -19,12 +18,12 @@ export default function EnglishWordSorting({
   );
   const [draggingItem, setDraggingItem] = useState(null);
   const [draggingCoords, setDraggingCoords] = useState({ x: 0, y: 0 });
+  const [dragOverTarget, setDragOverTarget] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const dropTargetRef = useRef(null);
 
-  // Text-to-speech (only for words)
   const [isReading, setIsReading] = useState(false);
   const readAloud = (text) => {
     if ("speechSynthesis" in window && !isReading) {
@@ -37,7 +36,6 @@ export default function EnglishWordSorting({
 
   const useImages = question.images && question.images.length > 0;
 
-  // ✅ Reset when question changes
   useEffect(() => {
     const source =
       question.images?.length > 0
@@ -53,7 +51,12 @@ export default function EnglishWordSorting({
     setDraggingItem(null);
   }, [question]);
 
-  const handleDragStart = (item) => setDraggingItem(item);
+  const handleDragStart = (item, e) => {
+    setDraggingItem(item);
+    if (e?.clientX && e?.clientY) {
+      setDraggingCoords({ x: e.clientX, y: e.clientY });
+    }
+  };
 
   const handleDrop = (target) => {
     if (!draggingItem) return;
@@ -79,6 +82,7 @@ export default function EnglishWordSorting({
     }
 
     setDraggingItem(null);
+    setDragOverTarget(null);
   };
 
   const handleTouchStart = (item, e) => {
@@ -102,7 +106,25 @@ export default function EnglishWordSorting({
     }
     setDraggingItem(null);
     dropTargetRef.current = null;
+    setDragOverTarget(null);
   };
+
+  // ✅ Track mouse move for desktop drag preview
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (draggingItem) {
+        setDraggingCoords({ x: e.clientX, y: e.clientY });
+      }
+    };
+
+    if (draggingItem) {
+      window.addEventListener("mousemove", handleMouseMove);
+    } else {
+      window.removeEventListener("mousemove", handleMouseMove);
+    }
+
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [draggingItem]);
 
   const checkAnswers = () => {
     setIsSubmitted(true);
@@ -162,7 +184,7 @@ export default function EnglishWordSorting({
       <motion.div
         key={item}
         draggable={!showFeedback}
-        onDragStart={() => handleDragStart(item)}
+        onDragStart={(e) => handleDragStart(item, e)}
         onDragEnd={() => setDraggingItem(null)}
         onTouchStart={(e) => !showFeedback && handleTouchStart(item, e)}
         onTouchMove={!showFeedback ? handleTouchMove : undefined}
@@ -170,7 +192,6 @@ export default function EnglishWordSorting({
         onClick={() => !useImages && readAloud(item)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        // transition={{ type: "spring", stiffness: 300 }}
         layout
         className={finalClass}
       >
@@ -193,32 +214,34 @@ export default function EnglishWordSorting({
       onTouchMove={!showFeedback ? handleTouchMove : undefined}
       onTouchEnd={!showFeedback ? handleTouchEnd : undefined}
     >
-      {/* Drag preview for mobile */}
+      {/* Drag preview for mouse & touch */}
       <AnimatePresence>
-        {draggingItem && (
-          <motion.div
-            className="fixed z-50 px-4 py-2 rounded-lg shadow-lg pointer-events-none"
-            style={{
-              left: draggingCoords.x,
-              top: draggingCoords.y,
-              transform: "translate(-50%, -50%)",
-            }}
-            initial={{ opacity: 0.5, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.5 }}
-          >
-            {useImages ? (
-              <img
-                src={draggingItem}
-                alt="drag-preview"
-                className="w-16 h-16 object-contain"
-              />
-            ) : (
-              draggingItem
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+  {draggingItem && (
+    <motion.div
+      className="fixed z-50 px-4 py-2 rounded-lg shadow-lg pointer-events-none bg-blue-100/80 border border-blue-300"
+      style={{
+        left: draggingCoords.x,
+        top: draggingCoords.y,
+        transform: "translate(-50%, -50%)",
+        backdropFilter: "blur(4px)", // soft blur effect
+      }}
+      initial={{ opacity: 0.6, scale: 0.95 }}
+      animate={{ opacity: 0.9, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+    >
+      {useImages ? (
+        <img
+          src={draggingItem}
+          alt="drag-preview"
+          className="w-16 h-16 object-contain opacity-80"
+        />
+      ) : (
+        <span className="text-blue-800 font-semibold">{draggingItem}</span>
+      )}
+    </motion.div>
+  )}
+</AnimatePresence>
+
 
       {showFeedback ? (
         <div className="text-center">
@@ -275,25 +298,48 @@ export default function EnglishWordSorting({
         </div>
       ) : (
         <>
-          {/* Show Instruction */}
           <p className="text-gray-600 text-left text-lg mb-4">
             {question.instruction}
           </p>
 
-          {/* Available Items */}
-          <div className="flex flex-wrap justify-left mb-6">
-            {availableItems.map((item, idx) => renderItem(item, idx))}
+          <div
+            data-drop-target="available"
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOverTarget("available");
+            }}
+            onDragLeave={() => setDragOverTarget(null)}
+            onDrop={() => handleDrop("available")}
+            className={`p-4 border-2 border-dashed rounded-lg mb-6 min-h-[80px] transition-colors duration-200 ${
+              dragOverTarget === "available"
+                ? "border-blue-500 bg-blue-50"
+                : "border-gray-300"
+            }`}
+          >
+            <h3 className="font-semibold text-center mb-2 text-gray-700">
+              Available
+            </h3>
+            <div className="flex flex-wrap justify-left">
+              {availableItems.map((item, idx) => renderItem(item, idx))}
+            </div>
           </div>
 
-          {/* Drop Zones */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {Object.keys(question.answers).map((category) => (
               <div
                 key={category}
                 data-drop-target={category}
-                onDragOver={(e) => e.preventDefault()}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragOverTarget(category);
+                }}
+                onDragLeave={() => setDragOverTarget(null)}
                 onDrop={() => handleDrop(category)}
-                className="p-4 min-h-[80px] border-2 border-dashed border-gray-400 rounded-lg"
+                className={`p-4 min-h-[80px] border-2 border-dashed rounded-lg transition-colors duration-200 ${
+                  dragOverTarget === category
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-400"
+                }`}
               >
                 <h3 className="font-semibold text-center mb-2">{category}</h3>
                 <div className="flex flex-wrap">
@@ -303,7 +349,6 @@ export default function EnglishWordSorting({
             ))}
           </div>
 
-          {/* Submit button */}
           <div className="text-center mt-6">
             <motion.button
               onClick={checkAnswers}
