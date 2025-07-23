@@ -1,0 +1,12 @@
+.grid-line {
+  stroke: #ccc;
+  stroke-width: 0.5;
+}
+.axis-line {
+  stroke: #000;
+  stroke-width: 1;
+}
+.plot-line {
+  stroke: #4a90e2;
+  stroke-width: 2;
+}

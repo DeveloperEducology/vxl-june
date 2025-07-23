@@ -20,12 +20,18 @@ import FormObj from "./components/FormObj";
 import WordPhonetics from "./components/WordPhonetics";
 import SortingWords from "./othertesting/SortingWords";
 import MatchingQuiz from "./pages/MatchingComponent";
+import InequalityQuiz from "./components/InequalityQuiz";
+import SingleInequalityGraph from "./components/SingleInequalityGraph";
+import LaunchPad from "./components/LaunchPad";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/ph" element={<Phonetics />} />
+      <Route path="/launch-pad" element={<LaunchPad />} />
+      <Route path="/in-eq" element={<InequalityQuiz />} />
+      <Route path="/single-eq" element={<SingleInequalityGraph />} />
       <Route path="/mq" element={<MatchingQuiz />} />
       <Route path="/form" element={<FormObj />} />
       <Route path="/emoji" element={<EmojiGuessQuiz />} />
