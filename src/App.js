@@ -23,6 +23,12 @@ import MatchingQuiz from "./pages/MatchingComponent";
 import InequalityQuiz from "./components/InequalityQuiz";
 import SingleInequalityGraph from "./components/SingleInequalityGraph";
 import LaunchPad from "./components/LaunchPad";
+import KidFriendlyPage from "./othertesting/KidFriendlyPage";
+import MathTopicsList from "./othertesting/MathTopicsList";
+import MathQuiz from "./othertesting/MathQuizComp";
+import KidFriendlyPageDynamic from "./othertesting/KidFriendlyPageDynamic";
+import TextToSpeech from "./components/TextToSpeech";
+import ChatComponent from "./components/ChatComponent";
 
 function App() {
   return (
@@ -46,6 +52,12 @@ function App() {
       <Route path="/math-editor" element={<MathQuestionForm />} />
       <Route path="/editor" element={<EditorWithMathRenderer />} />
       <Route path="/numsort" element={<NumberSorting />} />
+      <Route path="/kid/:topicKey" element={<KidFriendlyPage />} />
+      <Route path="/kidnap" element={<KidFriendlyPageDynamic />} />
+      <Route path="/kid-math" element={<MathTopicsList />} />
+      <Route path="/quiz/:topicKey" element={<MathQuiz />} />
+      <Route path="/tts" element={<TextToSpeech />} />
+      <Route path="/chat" element={<ChatComponent />} />
 
       <Route path="/subjects/:classId" element={<SubjectsPage />} />
       <Route
