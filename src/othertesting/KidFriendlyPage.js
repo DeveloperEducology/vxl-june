@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { questionsGenerator } from "./utils/KidQnGntr";
-import { FiVolume2 } from "react-icons/fi";
+import { FiVolume, FiVolume2 } from "react-icons/fi";
 import { NumberLineQuestion } from "./utils/NumberLine";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -20,7 +20,6 @@ const KidFriendlyPage = () => {
   const [showResult, setShowResult] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
-
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -46,16 +45,16 @@ const KidFriendlyPage = () => {
   //   };
 
   const readAloud = async (text) => {
-  setIsSpeaking(true);
-  try {
-    const audio = await window.puter.ai.txt2speech(text, "en-US");
-    audio.onended = () => setIsSpeaking(false);
-    audio.play();
-  } catch (err) {
-    alert("TTS error");
-    setIsSpeaking(false);
-  }
-};
+    setIsSpeaking(true);
+    try {
+      const audio = await window.puter.ai.txt2speech(text, "en-US");
+      audio.onended = () => setIsSpeaking(false);
+      audio.play();
+    } catch (err) {
+      alert("TTS error");
+      setIsSpeaking(false);
+    }
+  };
 
   // Generate next question
   const generateNewQuestion = () => {
@@ -476,10 +475,11 @@ const KidFriendlyPage = () => {
           <p className="text-xl text-center whitespace-pre-wrap text-gray-800 min-h-[4rem] flex items-center justify-left">
             <button
               onClick={() => readAloud(currentQuestion?.question)}
+              disabled={isSpeaking}
               className="mr-2 text-xl text-purple-600 hover:text-purple-800 transition-colors"
               aria-label="Read aloud"
             >
-              <FiVolume2 />
+              {isSpeaking ? <FiVolume /> : <FiVolume2 />}
             </button>
             <div>
               {currentQuestion?.passage && (
