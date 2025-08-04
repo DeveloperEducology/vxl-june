@@ -2,6 +2,9 @@ import React, { useMemo, useState } from "react";
 import DomainQuestionSVG from "./DomainQuestionSVG";
 import FunctionGraphQuiz from "./FunctionGraphQuiz";
 import QuizTemplate from "./QuizTemplate";
+import QuizRenderer from "./QuizRenderer";
+
+import { data } from "./Data";
 
 // ✅ Utility to generate random points
 function generateRandomPoints(count = 4, min = -5, max = 5) {
@@ -15,6 +18,8 @@ function generateRandomPoints(count = 4, min = -5, max = 5) {
 }
 
 export default function LaunchPad() {
+  const [index, setIndex] = React.useState(0);
+
   // ✅ Generate random points once
   const randomPoints = useMemo(() => generateRandomPoints(4), []);
 
@@ -37,6 +42,17 @@ export default function LaunchPad() {
             showHints={true} // show dashed hint line
           />
         );
+      case "NewGraph":
+        return (
+          <div>
+            <QuizRenderer question={data[index]} />
+            <button
+              onClick={() => setIndex((prev) => (prev + 1) % data.length)}
+            >
+              Next Question
+            </button>
+          </div>
+        );
 
       default:
         return <p>Select a quiz type</p>;
@@ -54,6 +70,7 @@ export default function LaunchPad() {
         <option value="domain">Domain Question</option>
         <option value="functionGraph">Function Graph Quiz</option>
         <option value="graph">Graph Quiz</option>
+        <option value="NewGraph">New Graph</option>
       </select>
 
       {/* <hr style={{ margin: "20px 0" }} /> */}

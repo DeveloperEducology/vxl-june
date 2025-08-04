@@ -8,6 +8,7 @@ export default {
     extend: {
       fontFamily: {
         candal: ['Candal', 'sans-serif'],
+        fun: ['Fredoka', 'sans-serif'],
       },
     },
   },
