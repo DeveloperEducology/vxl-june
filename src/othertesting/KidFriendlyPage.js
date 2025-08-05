@@ -4,7 +4,11 @@ import { questionsGenerator } from "./utils/KidQnGntr";
 import { FiVolume, FiVolume2 } from "react-icons/fi";
 import { NumberLineQuestion } from "./utils/NumberLine";
 import ReactMarkdown from "react-markdown";
+import "katex/dist/katex.min.css";
 import remarkGfm from "remark-gfm";
+import { InlineMath } from "react-katex";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 
 const KidFriendlyPage = () => {
   const { topicKey } = useParams();
@@ -20,12 +24,25 @@ const KidFriendlyPage = () => {
   const [showResult, setShowResult] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isPuterReady, setIsPuterReady] = useState(false);
+  const [showhint, setShowhint] = useState(false);
 
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://js.puter.com/v2/";
     script.async = true;
+
+    script.onload = () => {
+      if (window.puter?.ai?.txt2speech) {
+        setIsPuterReady(true);
+      }
+    };
+
     document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
   }, []);
 
   // Generate question on load
@@ -66,6 +83,7 @@ const KidFriendlyPage = () => {
     setFeedback("");
     setShowResult(false);
     setUserAnswers([]);
+    setShowhint(false);
   };
 
   console.log("currentQuestion", currentQuestion);
@@ -314,7 +332,11 @@ const KidFriendlyPage = () => {
                 ${showResult ? "opacity-100" : ""}
               `}
                   >
-                    {option}
+                    {currentQuestion?.latex === true ? (
+                      <InlineMath math={option} />
+                    ) : (
+                      option
+                    )}
                   </button>
                 );
               })}
@@ -326,28 +348,100 @@ const KidFriendlyPage = () => {
                 {currentQuestion.feedbackPerOption[userAnswer]}
               </div>
             )}
+
+            {showResult && userAnswer && (
+              <div className="mt-4 text-md text-gray-800 bg-white/80 border-l-4 border-purple-400 p-3 rounded-md max-w-lg">
+                <strong>Explanation:</strong>
+                {currentQuestion?.explanation?.map((exp, i) => (
+                  <ReactMarkdown
+                    key={i}
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                  >
+                    {exp}
+                  </ReactMarkdown>
+                ))}
+              </div>
+            )}
           </div>
         );
 
       case "mcq-multiple":
         return (
-          <div className="grid grid-cols-2 gap-4">
-            {currentQuestion.options.map((option) => (
-              <button
-                key={option}
-                onClick={() => handleMultipleSelect(option)}
-                disabled={showResult}
-                className={`text-center p-3 rounded-xl cursor-pointer text-lg font-medium border-4 transition-all ${
-                  selectedAnswers.includes(option)
-                    ? "bg-purple-200 border-purple-400 scale-105"
-                    : "bg-white border-gray-300 hover:border-purple-300"
-                } ${showResult ? "opacity-60 cursor-not-allowed" : ""}`}
-              >
-                {option}
-              </button>
-            ))}
+          <div className="flex flex-col gap-4 items-center w-full">
+            <div className="flex flex-wrap gap-6 justify-center">
+              {currentQuestion?.options.map((option) => {
+                const isSelected = selectedAnswers.includes(option);
+                const isCorrect =
+                  showResult && currentQuestion.answer.includes(option);
+                const isWrong =
+                  showResult &&
+                  isSelected &&
+                  !currentQuestion.answer.includes(option);
+
+                return (
+                  <button
+                    key={option}
+                    onClick={() => handleMultipleSelect(option)}
+                    disabled={showResult}
+                    className={`text-center p-3 rounded-xl cursor-pointer text-lg font-medium border-2 transition-all min-w-[100px]
+              ${isCorrect ? "bg-green-200 border-green-500" : ""}
+              ${isWrong ? "bg-red-200 border-red-500" : ""}
+              ${
+                isSelected && !showResult
+                  ? "bg-purple-200 border-purple-400 scale-105"
+                  : ""
+              }
+              ${
+                !isSelected && !showResult
+                  ? "bg-white border-gray-300 hover:border-purple-300"
+                  : ""
+              }
+              ${showResult ? "opacity-100" : ""}
+            `}
+                  >
+                    {currentQuestion?.latex ? (
+                      <InlineMath math={option} />
+                    ) : (
+                      option
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {showResult &&
+              selectedAnswers.length > 0 &&
+              currentQuestion.feedbackPerOption && (
+                <div className="mt-4 text-md text-gray-800 bg-white/80 border-l-4 border-purple-400 p-3 rounded-md max-w-lg">
+                  <strong>Feedback:</strong>
+                  <ul className="mt-1 list-disc list-inside space-y-1">
+                    {selectedAnswers.map((answer, index) => (
+                      <li key={index}>
+                        {answer}: {currentQuestion.feedbackPerOption[answer]}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+            {showResult && currentQuestion.explanation && (
+              <div className="mt-4 text-md text-gray-800 bg-white/80 border-l-4 border-purple-400 p-3 rounded-md max-w-lg">
+                <strong>Explanation:</strong>
+                <ul className="mt-2 list-disc list-inside space-y-1">
+                  {currentQuestion.explanation.map((explain, index) => (
+                    <li key={index}>
+                      <span>
+                        <InlineMath math={explain} />
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         );
+
       case "true_false":
         return (
           <div className="flex flex-col gap-4 items-center w-full">
@@ -468,9 +562,18 @@ const KidFriendlyPage = () => {
         </div>
 
         <div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-xl space-y-6">
-          <h2 className="text-mg font-bold text-left text-purple-700">
-            {decodedKey}
-          </h2>
+          <div className="flex flex-row justify-between">
+            <h2 className="text-mg font-bold text-left text-purple-700">
+              {decodedKey}
+            </h2>
+
+            <button onClick={() => setShowhint(!showhint)}>hint</button>
+          </div>
+          {showhint && (
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {currentQuestion?.hint}
+            </ReactMarkdown>
+          )}
 
           <p className="text-xl text-center whitespace-pre-wrap text-gray-800 min-h-[4rem] flex items-center justify-left">
             <button
@@ -481,6 +584,7 @@ const KidFriendlyPage = () => {
             >
               {isSpeaking ? <FiVolume /> : <FiVolume2 />}
             </button>
+
             <div>
               {currentQuestion?.passage && (
                 <div className="mb-4">
@@ -490,9 +594,26 @@ const KidFriendlyPage = () => {
                   </div>
                 </div>
               )}
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {currentQuestion?.question}
-              </ReactMarkdown>
+              {currentQuestion?.latex ? (
+                <div className="text-xl text-gray-800 whitespace-pre-wrap break-words leading-relaxed">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm, remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                  >
+                    {currentQuestion?.question}
+                  </ReactMarkdown>
+                </div>
+              ) : (
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {currentQuestion?.question}
+                </ReactMarkdown>
+              )}
+
+              <div
+                className="flex justify-center"
+                dangerouslySetInnerHTML={{ __html: currentQuestion?.svg }}
+              />
+
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
