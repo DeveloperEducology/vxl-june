@@ -37,6 +37,15 @@ export const getOrdinalSuffix = (num) => {
   }
 };
 
+// Helper for circle segment math
+function polarToCartesian(cx, cy, r, angleInDegrees) {
+  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
+  return {
+    x: cx + r * Math.cos(angleInRadians),
+    y: cy + r * Math.sin(angleInRadians),
+  };
+}
+
 // Helper function to shuffle array
 export const shuffleArray = (array) => {
   return array.sort(() => Math.random() - 0.5);
@@ -292,64 +301,65 @@ export const questionsGenerator = {
     };
   },
   "A.12 Skip-counting puzzles": () => {
-  const start = Math.floor(Math.random() * 20) * 5 + 10; // 10, 15, ..., 105
-  const stepOptions = [2, 5, 10];
-  const step = stepOptions[Math.floor(Math.random() * stepOptions.length)];
+    const start = Math.floor(Math.random() * 20) * 5 + 10; // 10, 15, ..., 105
+    const stepOptions = [2, 5, 10];
+    const step = stepOptions[Math.floor(Math.random() * stepOptions.length)];
 
-  const maxSteps = 10 + Math.floor(Math.random() * 6); // 10 to 15 steps
-  const path = Array.from({ length: maxSteps }, (_, i) => start + i * step);
+    const maxSteps = 10 + Math.floor(Math.random() * 6); // 10 to 15 steps
+    const path = Array.from({ length: maxSteps }, (_, i) => start + i * step);
 
-  const includeTarget = Math.random() < 0.7; // 70% chance of reachable
-  const target = includeTarget
-    ? path[Math.floor(Math.random() * path.length)]
-    : start + step * maxSteps + step * (Math.floor(Math.random() * 3) + 1);
+    const includeTarget = Math.random() < 0.7; // 70% chance of reachable
+    const target = includeTarget
+      ? path[Math.floor(Math.random() * path.length)]
+      : start + step * maxSteps + step * (Math.floor(Math.random() * 3) + 1);
 
-  const answer = path.includes(target) ? "yes" : "no";
+    const answer = path.includes(target) ? "yes" : "no";
 
-  return {
-    type: "mcq",
-    question: `**Karen began at ${start}. She skip-counted by ${step}s. Could she have said the number ${target}?**`,
-    answer,
-    options: ["yes", "no"],
-  };
-},
+    return {
+      type: "mcq",
+      question: `**Karen began at ${start}. She skip-counted by ${step}s. Could she have said the number ${target}?**`,
+      answer,
+      options: ["yes", "no"],
+    };
+  },
 
-  "🔢 Even Number Hunt": () => {
-    // Generate 4 numbers (mix of even and odd)
+  "A.8 Select even or odd numbers": () => {
     const numbers = [];
     const evenNumbers = [];
+    const oddNumbers = [];
 
-    // Ensure at least 2 even numbers in options
+    // Randomly decide whether to ask for even or odd
+    const askFor = Math.random() < 0.5 ? "even" : "odd";
+
+    // Generate 2 unique even numbers
     while (evenNumbers.length < 2) {
-      const num = Math.floor(Math.random() * 20); // 0-19
+      const num = Math.floor(Math.random() * 20); // 0–19
       if (num % 2 === 0 && !evenNumbers.includes(num)) {
         evenNumbers.push(num);
       }
     }
 
-    // Add 2 odd numbers
-    const oddNumbers = [];
+    // Generate 2 unique odd numbers
     while (oddNumbers.length < 2) {
-      const num = Math.floor(Math.random() * 19) + 1; // 1-19
+      const num = Math.floor(Math.random() * 20) + 1; // 1–20
       if (num % 2 !== 0 && !oddNumbers.includes(num)) {
         oddNumbers.push(num);
       }
     }
 
-    // Combine and shuffle
     const allNumbers = [...evenNumbers, ...oddNumbers].sort(
       () => Math.random() - 0.5
     );
 
     return {
       type: "mcq-multiple",
-      question: "Which of the following numbers are even?",
-      answer: evenNumbers.map((n) => n.toString()),
-      visuals: allNumbers.map((num) => ({
-        type: "text",
-        content: num.toString(),
-      })),
+      question: `Which of the following numbers are ${askFor}?`,
+      answer: (askFor === "even" ? evenNumbers : oddNumbers).map((n) =>
+        n.toString()
+      ),
       options: allNumbers.map((n) => n.toString()),
+      // visuals: allNumbers.map((n) => ({ type: "text", content: n.toString() })),
+      questionType: askFor,
     };
   },
 
@@ -1001,31 +1011,68 @@ export const questionsGenerator = {
     };
   },
   "A.2 Synonym Match": () => {
-  const synonymPairs = [
-    { word: "happy", synonym: "joyful", distractors: ["sad", "angry", "fast"] },
-    { word: "big", synonym: "large", distractors: ["tiny", "short", "small"] },
-    { word: "smart", synonym: "intelligent", distractors: ["lazy", "slow", "dumb"] },
-    { word: "cold", synonym: "chilly", distractors: ["hot", "warm", "burning"] },
-    { word: "fast", synonym: "quick", distractors: ["slow", "late", "tired"] },
-    { word: "pretty", synonym: "beautiful", distractors: ["ugly", "bad", "dirty"] },
-    { word: "angry", synonym: "mad", distractors: ["calm", "kind", "quiet"] },
-    { word: "start", synonym: "begin", distractors: ["end", "stop", "finish"] },
-    { word: "strong", synonym: "powerful", distractors: ["weak", "soft", "tiny"] },
-    { word: "clean", synonym: "tidy", distractors: ["dirty", "messy", "smelly"] },
-  ];
+    const synonymPairs = [
+      {
+        word: "happy",
+        synonym: "joyful",
+        distractors: ["sad", "angry", "fast"],
+      },
+      {
+        word: "big",
+        synonym: "large",
+        distractors: ["tiny", "short", "small"],
+      },
+      {
+        word: "smart",
+        synonym: "intelligent",
+        distractors: ["lazy", "slow", "dumb"],
+      },
+      {
+        word: "cold",
+        synonym: "chilly",
+        distractors: ["hot", "warm", "burning"],
+      },
+      {
+        word: "fast",
+        synonym: "quick",
+        distractors: ["slow", "late", "tired"],
+      },
+      {
+        word: "pretty",
+        synonym: "beautiful",
+        distractors: ["ugly", "bad", "dirty"],
+      },
+      { word: "angry", synonym: "mad", distractors: ["calm", "kind", "quiet"] },
+      {
+        word: "start",
+        synonym: "begin",
+        distractors: ["end", "stop", "finish"],
+      },
+      {
+        word: "strong",
+        synonym: "powerful",
+        distractors: ["weak", "soft", "tiny"],
+      },
+      {
+        word: "clean",
+        synonym: "tidy",
+        distractors: ["dirty", "messy", "smelly"],
+      },
+    ];
 
-  const shuffleArray = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const shuffleArray = (arr) => [...arr].sort(() => Math.random() - 0.5);
 
-  const selected = synonymPairs[Math.floor(Math.random() * synonymPairs.length)];
-  const options = shuffleArray([selected.synonym, ...selected.distractors]);
+    const selected =
+      synonymPairs[Math.floor(Math.random() * synonymPairs.length)];
+    const options = shuffleArray([selected.synonym, ...selected.distractors]);
 
-  return {
-    type: "mcq",
-    question: `**Which word is a synonym of _${selected.word}_?**`,
-    options,
-    answer: selected.synonym,
-  };
-},
+    return {
+      type: "mcq",
+      question: `**Which word is a synonym of _${selected.word}_?**`,
+      options,
+      answer: selected.synonym,
+    };
+  },
   "A.3 Reading Comprehension (True/False)": () => {
     const passages = [
       {
@@ -1073,6 +1120,657 @@ export const questionsGenerator = {
       question: `**True or False?** _${questionText}_`,
       options: ["True", "False"],
       answer: correctAnswer,
+    };
+  },
+
+  "N.1 numberSystem": () => {
+    const numberToWords = (num) => {
+      const ones = [
+        "",
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+      ];
+      const teens = [
+        "ten",
+        "eleven",
+        "twelve",
+        "thirteen",
+        "fourteen",
+        "fifteen",
+        "sixteen",
+        "seventeen",
+        "eighteen",
+        "nineteen",
+      ];
+      const tens = [
+        "",
+        "",
+        "twenty",
+        "thirty",
+        "forty",
+        "fifty",
+        "sixty",
+        "seventy",
+        "eighty",
+        "ninety",
+      ];
+
+      const hundred = Math.floor(num / 100);
+      const remainder = num % 100;
+      const ten = Math.floor(remainder / 10);
+      const one = remainder % 10;
+
+      let words = ones[hundred] + " hundred";
+
+      if (remainder > 0) {
+        words += " and ";
+        if (remainder < 10) {
+          words += ones[one];
+        } else if (remainder < 20) {
+          words += teens[remainder - 10];
+        } else {
+          words += tens[ten];
+          if (one > 0) words += "-" + ones[one];
+        }
+      }
+
+      return words;
+    };
+
+    const num = Math.floor(Math.random() * 900 + 100); // 3-digit number
+    const correct = numberToWords(num);
+
+    // Distractors: slightly wrong versions
+    const distractors = [
+      numberToWords(num + 1),
+      numberToWords(num - 1),
+      numberToWords(num + 10),
+    ];
+
+    // Shuffle options
+    const options = [correct, ...distractors].sort(() => Math.random() - 0.5);
+
+    return {
+      type: "mcq",
+      question: `Write the number **${num}** in words.`,
+      options,
+      answer: correct,
+      explanation: `Break ${num} into hundreds, tens, and ones. Then convert each to words. Example: ${num} → ${correct}`,
+    };
+  },
+  "N.4 fractionAscendingOrder": () => {
+    const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
+    const reduceFraction = (num, den) => {
+      const g = gcd(num, den);
+      return [num / g, den / g];
+    };
+
+    const getLCM = (a, b) => (a * b) / gcd(a, b);
+
+    const generateBar = (num, den) => {
+      const filledCount = Math.round((num / den) * 10);
+      const filled = "█".repeat(filledCount);
+      const empty = "░".repeat(10 - filledCount);
+      return `[${filled}${empty}]`;
+    };
+
+    // Generate 4 unique reduced proper fractions
+    const fractionSet = new Set();
+    while (fractionSet.size < 4) {
+      const num = Math.floor(Math.random() * 5) + 1;
+      const den = Math.floor(Math.random() * 4) + num + 2;
+      const [n, d] = reduceFraction(num, den);
+      fractionSet.add(`${n}/${d}`);
+    }
+
+    const fractions = Array.from(fractionSet).map((f) => {
+      const [n, d] = f.split("/").map(Number);
+      return {
+        n,
+        d,
+        value: n / d,
+        text: `\\frac{${n}}{${d}}`,
+        bar: generateBar(n, d),
+      };
+    });
+
+    // Correct ascending order
+    const sorted = [...fractions].sort((a, b) => a.value - b.value);
+    const correctOption = sorted.map((f) => f.text).join(" < ");
+
+    // Generate 3 distractors
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const generateWrongOptions = () => {
+      const opts = new Set();
+      while (opts.size < 3) {
+        const option = shuffle(fractions)
+          .map((f) => f.text)
+          .join(" < ");
+        if (option !== correctOption) opts.add(option);
+      }
+      return Array.from(opts);
+    };
+
+    const wrongOptions = generateWrongOptions();
+    const allOptions = shuffle([correctOption, ...wrongOptions]);
+
+    // Hint with visual bar
+    const hint = fractions.map((f) => `${f.text}: ${f.bar}`).join("\n");
+
+    // Step-by-step explanation using common denominators
+    const denominators = fractions.map((f) => f.d);
+    const commonDenominator = denominators.reduce((acc, d) => getLCM(acc, d));
+
+    const equivalentFractions = fractions.map((f) => {
+      const multiplier = commonDenominator / f.d;
+      return {
+        original: `\\frac{${f.n}}{${f.d}}`,
+        equivalent: `\\frac{${f.n * multiplier}}{${commonDenominator}}`,
+        numerator: f.n * multiplier,
+      };
+    });
+
+    const sortedEquivalents = [...equivalentFractions].sort(
+      (a, b) => a.numerator - b.numerator
+    );
+
+    const explanation = [
+      `Find LCM of denominators (${denominators.join(
+        ", "
+      )}): ${commonDenominator}`,
+      ...equivalentFractions.map((f) => `${f.original} = ${f.equivalent}`),
+      `Now compare the numerators:`,
+      sortedEquivalents.map((f) => f.equivalent).join(" < "),
+      `So the correct ascending order is:`,
+      sortedEquivalents.map((f) => f.original).join(" < "),
+    ];
+
+    return {
+      type: "mcq",
+      question: `Which option shows the fractions arranged in **ascending order**?`,
+      options: allOptions,
+      answer: correctOption,
+      latex: true,
+      hint: `Use the bar visuals to estimate each fraction's value:\n\n${hint}`,
+      explanation: explanation,
+    };
+  },
+  "N.4a compareTwoFractions": () => {
+    const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
+    const reduceFraction = (num, den) => {
+      const g = gcd(num, den);
+      return [num / g, den / g];
+    };
+    const getLCM = (a, b) => (a * b) / gcd(a, b);
+    const generateBar = (num, den) => {
+      const filledCount = Math.round((num / den) * 10);
+      const filled = "█".repeat(filledCount);
+      const empty = "░".repeat(10 - filledCount);
+      return `[${filled}${empty}]`;
+    };
+
+    // Generate 2 distinct proper reduced fractions
+    const fractionSet = new Set();
+    while (fractionSet.size < 2) {
+      const num = Math.floor(Math.random() * 5) + 1;
+      const den = Math.floor(Math.random() * 4) + num + 2;
+      const [n, d] = reduceFraction(num, den);
+      fractionSet.add(`${n}/${d}`);
+    }
+
+    const [f1, f2] = Array.from(fractionSet).map((f) => {
+      const [n, d] = f.split("/").map(Number);
+      return {
+        n,
+        d,
+        value: n / d,
+        text: `\\frac{${n}}{${d}}`,
+        bar: generateBar(n, d),
+      };
+    });
+
+    // Determine correct comparison
+    const symbols = ["<", ">", "="];
+    let answerSymbol =
+      f1.value < f2.value ? "<" : f1.value > f2.value ? ">" : "=";
+    const correctAnswer = `${f1.text} ${answerSymbol} ${f2.text}`;
+
+    // Generate distractors
+    const distractors = symbols
+      .filter((sym) => sym !== answerSymbol)
+      .map((sym) => `${f1.text} ${sym} ${f2.text}`);
+    const options = [correctAnswer, ...distractors].sort(
+      () => Math.random() - 0.5
+    );
+
+    // Hint bar
+    const hint = `${f1.text}: ${f1.bar}\n${f2.text}: ${f2.bar}`;
+
+    // Explanation using common denominator
+    const lcm = getLCM(f1.d, f2.d);
+    const f1EqNum = (lcm / f1.d) * f1.n;
+    const f2EqNum = (lcm / f2.d) * f2.n;
+
+    const explanation = [
+      `Find LCM of denominators (${f1.d}, ${f2.d}): ${lcm}`,
+      `${f1.text} = \\frac{${f1EqNum}}{${lcm}}`,
+      `${f2.text} = \\frac{${f2EqNum}}{${lcm}}`,
+      `Now compare the numerators: ${f1EqNum} ${answerSymbol} ${f2EqNum}`,
+      `So, ${f1.text} ${answerSymbol} ${f2.text} is the correct answer.`,
+    ];
+
+    return {
+      type: "mcq",
+      question: `Which of the following is correct?`,
+      options,
+      answer: correctAnswer,
+      latex: true,
+      hint: `Use the bar visuals to estimate each fraction's value:\n\n${hint}`,
+      explanation,
+    };
+  },
+  "N.4b TwoFractionsDescending": () => {
+    const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
+    const reduceFraction = (num, den) => {
+      const g = gcd(num, den);
+      return [num / g, den / g];
+    };
+    const getLCM = (a, b) => (a * b) / gcd(a, b);
+    const generateBar = (num, den) => {
+      const filledCount = Math.round((num / den) * 10);
+      const filled = "█".repeat(filledCount);
+      const empty = "░".repeat(10 - filledCount);
+      return `[${filled}${empty}]`;
+    };
+
+    // Generate 2 distinct proper reduced fractions
+    const fractionSet = new Set();
+    while (fractionSet.size < 2) {
+      const num = Math.floor(Math.random() * 5) + 1;
+      const den = Math.floor(Math.random() * 4) + num + 2;
+      const [n, d] = reduceFraction(num, den);
+      fractionSet.add(`${n}/${d}`);
+    }
+
+    const [f1, f2] = Array.from(fractionSet).map((f) => {
+      const [n, d] = f.split("/").map(Number);
+      return {
+        n,
+        d,
+        value: n / d,
+        text: `\\frac{${n}}{${d}}`,
+        bar: generateBar(n, d),
+      };
+    });
+
+    // Determine correct descending order
+    const correctAnswer =
+      f1.value > f2.value
+        ? `${f1.text} > ${f2.text}`
+        : `${f2.text} > ${f1.text}`;
+
+    const distractors = [
+      `${f1.text} < ${f2.text}`,
+      `${f2.text} < ${f1.text}`,
+      `${f1.text} = ${f2.text}`,
+    ].filter((option) => option !== correctAnswer);
+
+    const options = [correctAnswer, ...distractors.slice(0, 2)].sort(
+      () => Math.random() - 0.5
+    );
+
+    // Hint bar
+    const hint = `${f1.text}: ${f1.bar}\n${f2.text}: ${f2.bar}`;
+
+    // Explanation using common denominator
+    const lcm = getLCM(f1.d, f2.d);
+    const f1EqNum = (lcm / f1.d) * f1.n;
+    const f2EqNum = (lcm / f2.d) * f2.n;
+    const symbol = f1EqNum > f2EqNum ? ">" : f1EqNum < f2EqNum ? "<" : "=";
+
+    const explanation = [
+      `Find LCM of denominators (${f1.d}, ${f2.d}): ${lcm}`,
+      `${f1.text} = \\frac{${f1EqNum}}{${lcm}}`,
+      `${f2.text} = \\frac{${f2EqNum}}{${lcm}}`,
+      `Now compare the numerators: ${f1EqNum} ${symbol} ${f2EqNum}`,
+      `So the correct descending order is: ${correctAnswer}`,
+    ];
+
+    return {
+      type: "mcq",
+      question: `Which of the following shows the **descending order** between the two fractions?`,
+      options,
+      answer: correctAnswer,
+      latex: true,
+      hint: `Use the bar visuals to estimate each fraction's value:\n\n${hint}`,
+      explanation,
+    };
+  },
+
+  "A.1 fractionBasicsUnderstanding": () => {
+    const shapes = ["circle", "rectangle", "square", "pizza"];
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+
+    const denominators = [2, 3, 4, 5, 6];
+    const d = denominators[Math.floor(Math.random() * denominators.length)];
+    const n = Math.floor(Math.random() * d) + 1;
+
+    const correctAnswer = `${n}/${d}`;
+
+    // Generate 3 unique incorrect options
+    const distractors = new Set();
+    while (distractors.size < 3) {
+      const dn = denominators[Math.floor(Math.random() * denominators.length)];
+      const nn = Math.floor(Math.random() * dn) + 1;
+      const frac = `${nn}/${dn}`;
+      if (frac !== correctAnswer) distractors.add(frac);
+    }
+
+    const allOptions = [...distractors, correctAnswer].sort(
+      () => Math.random() - 0.5
+    );
+
+    const question = `A **${shape}** is divided into **${d} equal parts**. **${n} part(s)** are shaded.\n\n👉 What fraction of the ${shape} is shaded?`;
+
+    // SVG render function
+    const svg = (() => {
+      const size = 100;
+
+      if (shape === "circle" || shape === "pizza") {
+        const slices = Array.from({ length: d }, (_, i) => {
+          const angle = (360 / d) * i;
+          const largeArc = 360 / d > 180 ? 1 : 0;
+          const start = polarToCartesian(size, size, size, angle);
+          const end = polarToCartesian(size, size, size, angle + 360 / d);
+          const path = `
+          M ${size} ${size}
+          L ${start.x} ${start.y}
+          A ${size} ${size} 0 ${largeArc} 1 ${end.x} ${end.y}
+          Z
+        `;
+          return `<path d="${path}" fill="${
+            i < n ? "#7b61ff" : "#e0e0e0"
+          }" stroke="#444"/>`;
+        }).join("\n");
+
+        return `<svg width="200" height="200" viewBox="0 0 ${size * 2} ${
+          size * 2
+        }">${slices}</svg>`;
+      }
+
+      if (shape === "rectangle") {
+        const partWidth = 120 / d;
+        const bars = Array.from({ length: d }, (_, i) => {
+          return `<rect x="${
+            i * partWidth
+          }" y="0" width="${partWidth}" height="60" fill="${
+            i < n ? "#7b61ff" : "#e0e0e0"
+          }" stroke="#444"/>`;
+        }).join("\n");
+        return `<svg width="120" height="60">${bars}</svg>`;
+      }
+
+      if (shape === "square") {
+        const cols = Math.ceil(Math.sqrt(d));
+        const rows = Math.ceil(d / cols);
+        const cellSize = 30;
+        const grid = Array.from({ length: d }, (_, i) => {
+          const x = (i % cols) * cellSize;
+          const y = Math.floor(i / cols) * cellSize;
+          return `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" fill="${
+            i < n ? "#7b61ff" : "#e0e0e0"
+          }" stroke="#444"/>`;
+        }).join("\n");
+        return `<svg width="${cols * cellSize}" height="${
+          rows * cellSize
+        }">${grid}</svg>`;
+      }
+
+      return null;
+    })();
+
+    return {
+      type: "mcq",
+      question,
+      options: allOptions,
+      answer: correctAnswer,
+      hint: `Numerator (top): parts shaded = ${n}\nDenominator (bottom): total parts = ${d}`,
+      explanation: [
+        `A fraction shows how many parts of a whole are selected.`,
+        `Numerator = shaded parts (${n}), Denominator = total parts (${d}).`,
+        `So the fraction is **${n}/${d}**.`,
+      ],
+      svg, // raw SVG string (can be rendered with dangerouslySetInnerHTML)
+    };
+  },
+  "A.2 ProperFractionQuestion": () => {
+    const denominators = [2, 3, 4, 5, 6, 8];
+    const correctAnswers = new Set();
+
+    // Step 1: Generate multiple proper fractions (numerator < denominator)
+    while (correctAnswers.size < 2) {
+      const d = denominators[Math.floor(Math.random() * denominators.length)];
+      const n = Math.floor(Math.random() * (d - 1)) + 1;
+      correctAnswers.add(`${n}/${d}`);
+    }
+
+    // Step 2: Generate distractors (improper fractions: numerator >= denominator)
+    const distractors = new Set();
+    while (distractors.size < 2) {
+      const d = denominators[Math.floor(Math.random() * denominators.length)];
+      const n = Math.floor(Math.random() * (d + 3)) + d; // ensures n >= d
+      const frac = `${n}/${d}`;
+      if (!correctAnswers.has(frac)) {
+        distractors.add(frac);
+      }
+    }
+
+    const allOptions = [...correctAnswers, ...distractors];
+    const [sampleCorrect] = [...correctAnswers]; // use one of them to build SVG
+
+    const [nSvg, dSvg] = sampleCorrect.split("/").map(Number);
+
+    // Step 3: SVG
+    const boxWidth = 25;
+    const shadedColor = "#4caf50";
+    const unshadedColor = "#e0e0e0";
+
+    const svgParts = [];
+    for (let i = 0; i < dSvg; i++) {
+      const fill = i < nSvg ? shadedColor : unshadedColor;
+      svgParts.push(
+        `<rect x="${
+          i * boxWidth
+        }" y="0" width="${boxWidth}" height="20" fill="${fill}" />`
+      );
+    }
+
+    const svg = `<svg width="${
+      dSvg * boxWidth
+    }" height="20" xmlns="http://www.w3.org/2000/svg">
+    ${svgParts.join("\n")}
+    <rect x="0" y="0" width="${
+      dSvg * boxWidth
+    }" height="20" fill="none" stroke="#000"/>
+  </svg>`;
+
+    // Step 4: Return question object
+    return {
+      type: "mcq-multiple",
+      question: "Which of the following are proper fractions? (multi-select)",
+      options: allOptions.sort(() => Math.random() - 0.5), // shuffle
+      answer: [...correctAnswers],
+      hint: "A proper fraction has a numerator smaller than the denominator.",
+      explanation: [
+        `A **proper fraction** is where the numerator is less than the denominator.`,
+        `For example, **${sampleCorrect}** means ${nSvg} parts out of ${dSvg} total.`,
+        `Fractions like 5/4 or 8/6 are **improper** because the numerator is not smaller.`,
+      ],
+      svg,
+    };
+  },
+
+  ImproperToMixedQuestion: () => {
+    const denominators = [2, 3, 4, 5, 6];
+    const d = denominators[Math.floor(Math.random() * denominators.length)];
+
+    const n =
+      Math.floor(Math.random() * 4 + 1) * d + Math.floor(Math.random() * d); // n ≥ d
+    const whole = Math.floor(n / d);
+    const remainder = n % d;
+
+    const correctAnswer =
+      remainder === 0 ? `${whole}` : `${whole} \\frac{${remainder}}{${d}}`;
+
+    const distractors = new Set();
+
+    while (distractors.size < 3) {
+      let fakeWhole = whole + (Math.floor(Math.random() * 3) - 1);
+      let fakeRem = (remainder + Math.floor(Math.random() * 3)) % d;
+      if (fakeRem === 0 && fakeWhole === whole) continue;
+      if (fakeWhole < 0 || (fakeWhole === whole && fakeRem === remainder))
+        continue;
+      const distractor =
+        fakeRem === 0
+          ? `${fakeWhole}`
+          : `${fakeWhole} \\frac{${fakeRem}}{${d}}`;
+      distractors.add(distractor);
+    }
+
+    const allOptions = [...distractors];
+    allOptions.splice(Math.floor(Math.random() * 4), 0, correctAnswer);
+
+    // SVG Generation 🍰
+    const boxWidth = 25;
+    const cakeHeight = 25;
+    const wholeCakes = Math.floor(n / d);
+    const remainderShaded = n % d;
+
+    const svgParts = [];
+    for (let i = 0; i < wholeCakes; i++) {
+      svgParts.push(
+        `<rect x="${i * (d * boxWidth + 5)}" y="0" width="${
+          d * boxWidth
+        }" height="${cakeHeight}" fill="#4caf50" stroke="#000"/>`
+      );
+    }
+
+    if (remainderShaded > 0) {
+      for (let j = 0; j < d; j++) {
+        const fill = j < remainderShaded ? "#4caf50" : "#e0e0e0";
+        svgParts.push(
+          `<rect x="${
+            wholeCakes * (d * boxWidth + 5) + j * boxWidth
+          }" y="0" width="${boxWidth}" height="${cakeHeight}" fill="${fill}" stroke="#000" />`
+        );
+      }
+      svgParts.push(
+        `<rect x="${wholeCakes * (d * boxWidth + 5)}" y="0" width="${
+          d * boxWidth
+        }" height="${cakeHeight}" fill="none" stroke="#000"/>`
+      );
+    }
+
+    const svg = `<svg width="${
+      (wholeCakes + 1) * (d * boxWidth + 5)
+    }" height="${cakeHeight}" xmlns="http://www.w3.org/2000/svg">
+    ${svgParts.join("\n")}
+  </svg>`;
+
+    return {
+      type: "mcq",
+      latex: true,
+      question: `What is $\\frac{${n}}{${d}}$ as a mixed number?`,
+      options: allOptions.map((o) => `${o}`),
+      answer: correctAnswer,
+      hint: `Divide numerator by denominator: ${n} ÷ ${d} = ${whole} remainder ${remainder}`,
+      explanation: [
+        `Improper fraction means numerator ≥ denominator.`,
+        `\\( ${n} \\div ${d} = ${whole} \\) remainder \\( ${remainder} \\)`,
+        `So, \\( \\frac{${n}}{${d}} = ${whole} \\frac{${remainder}}{${d}} \\)`,
+      ],
+      svg,
+    };
+  },
+
+  MixedToImproperQuestion: () => {
+    const denominators = [2, 3, 4, 5, 6];
+    const d = denominators[Math.floor(Math.random() * denominators.length)];
+    const whole = Math.floor(Math.random() * 3 + 1); // 1–3
+    const remainder = Math.floor(Math.random() * (d - 1)) + 1; // 1 to d-1
+
+    const n = whole * d + remainder; // Improper numerator
+
+    const correctAnswer = `\\frac{${n}}{${d}}`;
+
+    // 🎯 Distractors
+    const distractors = new Set();
+    while (distractors.size < 3) {
+      const fakeWhole = whole + (Math.floor(Math.random() * 3) - 1);
+      const fakeRem = (remainder + Math.floor(Math.random() * 3)) % d;
+      const fakeN = fakeWhole * d + fakeRem;
+      const option = `\\frac{${fakeN}}{${d}}`;
+      if (fakeN !== n && fakeN > 0) distractors.add(option);
+    }
+
+    const allOptions = [...distractors];
+    allOptions.splice(Math.floor(Math.random() * 4), 0, correctAnswer);
+
+    // 🎨 SVG
+    const boxWidth = 25;
+    const cakeHeight = 25;
+
+    const svgParts = [];
+    for (let i = 0; i < whole; i++) {
+      svgParts.push(
+        `<rect x="${i * (d * boxWidth + 5)}" y="0" width="${
+          d * boxWidth
+        }" height="${cakeHeight}" fill="#4caf50" stroke="#000"/>`
+      );
+    }
+
+    for (let j = 0; j < d; j++) {
+      const fill = j < remainder ? "#4caf50" : "#e0e0e0";
+      svgParts.push(
+        `<rect x="${
+          whole * (d * boxWidth + 5) + j * boxWidth
+        }" y="0" width="${boxWidth}" height="${cakeHeight}" fill="${fill}" stroke="#000" />`
+      );
+    }
+
+    svgParts.push(
+      `<rect x="${whole * (d * boxWidth + 5)}" y="0" width="${
+        d * boxWidth
+      }" height="${cakeHeight}" fill="none" stroke="#000"/>`
+    );
+
+    const svg = `<svg width="${
+      (whole + 1) * (d * boxWidth + 5)
+    }" height="${cakeHeight}" xmlns="http://www.w3.org/2000/svg">
+    ${svgParts.join("\n")}
+  </svg>`;
+
+    return {
+      type: "mcq",
+      latex: true,
+
+      question: `What is $${whole}\\frac{${remainder}}{${d}}$ as an improper fraction?`,
+
+      options: allOptions,
+      answer: correctAnswer,
+      hint: `Use formula: (whole × denominator) + numerator = improper numerator → (${whole} × ${d}) + ${remainder} = ${n}`,
+      explanation: [
+        `To convert a mixed number to improper fraction:`,
+        `\\( ${whole} \\frac{${remainder}}{${d}} = \\frac{${whole} \\times ${d} + ${remainder}}{${d}} = \\frac{${n}}{${d}} \\)`,
+      ],
+      svg,
     };
   },
 
