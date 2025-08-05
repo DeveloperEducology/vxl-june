@@ -83,7 +83,7 @@ export default function EquationMCQ({
       correctAnswerSummary = correctInputs
         .map((i) => `${i.id}: ${i.correct}`)
         .join(", ");
-setShowSolution(true);
+      setShowSolution(true);
       setFeedback(
         isCorrect
           ? "✅ Correct!"
@@ -200,18 +200,20 @@ setShowSolution(true);
 
       {feedback && <div className="mt-4 text-lg font-medium">{feedback}</div>}
 
-      {showSolution && Array.isArray(lesson.solution) && lesson.solution.length > 0 && (
-        <div className="mt-4 p-4 bg-gray-100 rounded-md">
-          <h3 className="text-lg font-semibold mb-2">Solution</h3>
-          <div className="text-gray-700">
-            {lesson.solution.map((part, index) => (
-              <span key={index} className="block">
-                <BlockMath math={part} />
-              </span>
-            ))}
+      {showSolution &&
+        Array.isArray(lesson.solution) &&
+        lesson.solution.length > 0 && (
+          <div className="mt-4 p-4 bg-gray-100 rounded-md">
+            <h3 className="text-lg font-semibold mb-2">Solution</h3>
+            <div className="text-gray-700">
+              {lesson.solution.map((part, index) => (
+                <span key={index} className="block">
+                  <BlockMath math={part} />
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Action Buttons */}
       <div className="flex gap-4 mt-6">

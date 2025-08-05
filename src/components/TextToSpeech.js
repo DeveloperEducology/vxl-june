@@ -3,28 +3,52 @@ import React, { useEffect, useState } from "react";
 const TextToSpeech = () => {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isPuterReady, setIsPuterReady] = useState(false);
 
-  // Load Puter.js script once on mount
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://js.puter.com/v2/";
     script.async = true;
+
+    script.onload = () => {
+      if (window.puter?.ai?.txt2speech) {
+        setIsPuterReady(true);
+        console.log("✅ Puter.js loaded and ready.");
+      } else {
+        console.warn("⚠️ Puter.js loaded but API not available.");
+      }
+    };
+
+    script.onerror = () => {
+      console.error("❌ Failed to load Puter.js");
+    };
+
     document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
   }, []);
 
   const handleSpeak = async () => {
     if (!text.trim()) return;
 
-    if (!window.puter || !window.puter.ai || !window.puter.ai.txt2speech) {
-      alert("Puter.js not loaded yet.");
+    if (!window.puter?.ai?.txt2speech) {
+      alert("Puter TTS not available yet. Try again later.");
       return;
     }
 
     setLoading(true);
     try {
       const audio = await window.puter.ai.txt2speech(text, "en-US");
-      audio.play();
+
+      if (audio) {
+        audio.play();
+      } else {
+        alert("No audio returned from TTS.");
+      }
     } catch (error) {
+      console.error("TTS error:", error);
       alert("TTS failed: " + error.message);
     } finally {
       setLoading(false);
@@ -40,11 +64,24 @@ const TextToSpeech = () => {
         rows={5}
         placeholder="Enter text here..."
         style={styles.textarea}
+        disabled={!isPuterReady}
       />
 
-      <button onClick={handleSpeak} disabled={loading} style={styles.button}>
-        {loading ? "Speaking..." : "Speak"}
+      <button
+        onClick={handleSpeak}
+        disabled={!isPuterReady || loading}
+        style={{
+          ...styles.button,
+          backgroundColor: isPuterReady ? "#007bff" : "#aaa",
+          cursor: isPuterReady ? "pointer" : "not-allowed",
+        }}
+      >
+        {loading ? "🔊 Speaking..." : "▶️ Speak"}
       </button>
+
+      {!isPuterReady && (
+        <p style={styles.notice}>Loading Puter TTS library...</p>
+      )}
     </div>
   );
 };
@@ -67,15 +104,20 @@ const styles = {
     fontSize: "16px",
     borderRadius: "8px",
     border: "1px solid #ccc",
+    resize: "none",
   },
   button: {
     padding: "10px 20px",
     fontSize: "16px",
     borderRadius: "8px",
-    backgroundColor: "#007bff",
     color: "#fff",
     border: "none",
-    cursor: "pointer",
+    transition: "0.3s all ease-in-out",
+  },
+  notice: {
+    marginTop: "15px",
+    color: "#555",
+    fontStyle: "italic",
   },
 };
 
