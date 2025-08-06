@@ -28,7 +28,8 @@ import MathTopicsList from "./othertesting/MathTopicsList";
 import MathQuiz from "./othertesting/MathQuizComp";
 import KidFriendlyPageDynamic from "./othertesting/KidFriendlyPageDynamic";
 import TextToSpeech from "./components/TextToSpeech";
-import ChatComponent from "./components/ChatComponent";
+import SortingComponent from "./components/SortingComponent";
+import DragSortBuckets from "./components/DragSortBuckets";
 
 function App() {
   return (
@@ -57,7 +58,8 @@ function App() {
       <Route path="/kid-math" element={<MathTopicsList />} />
       <Route path="/quiz/:topicKey" element={<MathQuiz />} />
       <Route path="/tts" element={<TextToSpeech />} />
-      <Route path="/chat" element={<ChatComponent />} />
+      <Route path="/sorting" element={<SortingComponent />} />
+      <Route path="/bucket" element={<DragSortBuckets />} />
 
       <Route path="/subjects/:classId" element={<SubjectsPage />} />
       <Route
